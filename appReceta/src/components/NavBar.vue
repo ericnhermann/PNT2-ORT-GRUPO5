@@ -8,7 +8,6 @@
     <div class="navbar-menu">
       <router-link to="/" class="navbar-item">Inicio</router-link>
       <router-link to="/recetas" class="navbar-item">Recetas</router-link>
-      <router-link to="/crear" class="navbar-item">Crear Receta</router-link>
     </div>
   </nav>
 </template>
