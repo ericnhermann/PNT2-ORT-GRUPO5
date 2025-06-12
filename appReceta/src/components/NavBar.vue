@@ -1,68 +1,51 @@
 <template>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container">
-
-      <router-link class="navbar-brand" to="/">
-        <i class="fas fa-utensils me-2"></i>
-        RecetasApp
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <router-link to="/" class="navbar-item">
+        AppReceta
       </router-link>
-
-
-      <button 
-        class="navbar-toggler" 
-        type="button" 
-        data-bs-toggle="collapse" 
-        data-bs-target="#navbarNav" 
-        aria-controls="navbarNav" 
-        aria-expanded="false" 
-        aria-label="Toggle navigation"
-      >
-        <span class="navbar-toggler-icon"></span>
-      </button>
-
-      
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto">
-          <li class="nav-item">
-            <router-link class="nav-link" to="/">Inicio</router-link>
-          </li>
-          <li class="nav-item">
-            <router-link class="nav-link" to="/recetas">Recetas</router-link>
-          </li>
-          <li class="nav-item">
-            <router-link class="nav-link" to="/categorias">Categorías</router-link>
-          </li>
-          <li class="nav-item">
-            <router-link class="nav-link" to="/contacto">Contacto</router-link>
-          </li>
-        </ul>
-      </div>
+    </div>
+    <div class="navbar-menu">
+      <router-link to="/" class="navbar-item">Inicio</router-link>
+      <router-link to="/recetas" class="navbar-item">Recetas</router-link>
+      <router-link to="/crear" class="navbar-item">Crear Receta</router-link>
     </div>
   </nav>
 </template>
 
-<script>
-export default {
-  name: 'NavBar'
-}
+<script setup>
+// Componente NavBar
 </script>
 
 <style scoped>
 .navbar {
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.nav-link {
-  font-weight: 500;
-  transition: color 0.3s ease;
-}
-
-.nav-link:hover {
-  color: #ffc107 !important;
+  background-color: #4CAF50;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
 }
 
 .navbar-brand {
-  font-weight: 600;
-  font-size: 1.4rem;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.navbar-menu {
+  display: flex;
+  gap: 1rem;
+}
+
+.navbar-item {
+  color: white;
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.navbar-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
 }
 </style>
