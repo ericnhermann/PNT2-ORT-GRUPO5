@@ -1,7 +1,5 @@
 <template>
   <div class="container py-4">
-    <h1 class="mb-4">Recetas</h1>
-
     <div class="row">
       <div
         v-for="receta in recetas"
@@ -25,7 +23,7 @@
               <strong>Categoría:</strong> {{ receta.Categoria }}
             </p>
             <p class="card-text mb-1">
-              <strong>Puntaje:</strong> {{ receta.puntajeReceta }}
+              <strong>Puntaje:</strong> {{ getEstrellas(receta.puntajeReceta) }}
             </p>
             <p class="card-text mb-0">
               <strong>Ingredientes:</strong> {{ countIngredientes(receta) }}
@@ -63,10 +61,30 @@ function countIngredientes(receta) {
   ];
   return ingredientes.filter((i) => i && i.trim() !== "").length;
 }
+
+function getEstrellas(puntaje) {
+  const estrellasLlenas = Math.round(puntaje); // Si querés redondear
+  const totalEstrellas = 5;
+  const estrellas = [];
+
+  for (let i = 1; i <= totalEstrellas; i++) {
+    estrellas.push(i <= estrellasLlenas ? "★" : "☆");
+  }
+
+  return estrellas.join("");
+}
 </script>
 <style scoped>
 .row {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center; /* centra horizontalmente los items */
+  gap: 2rem; /* espacio entre cards */
+}
+
+.card {
+  margin: 10px; /* espacio alrededor de cada card */
+  border: 2px solid white !important;
+  border-radius: 0 !important;
 }
 </style>
