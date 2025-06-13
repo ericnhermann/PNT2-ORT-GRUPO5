@@ -1,41 +1,132 @@
 <template>
-  <div class="recetas">
-    <h1>Recetas</h1>
-    <div class="recetas-grid">
-      <!-- Aquí irá el listado de recetas cuando tengamos la API -->
-      <div class="receta-card">
-        <h3>Receta de ejemplo</h3>
-        <p>Descripción de la receta...</p>
+  <div class="container py-4">
+    <div class="row">
+      <div
+        v-for="receta in recetas"
+        :key="receta.id"
+        class="col-12 col-sm-6 col-md-4 mb-4"
+      >
+        <div class="card border border-light border-2 position-relative">
+          <!-- Estrella de favorito -->
+          <button
+            class="favorito-btn"
+            @click="toggleFavorita(receta)"
+            :class="{ activa: receta.favorita }"
+          >
+            ★
+          </button>
+
+          <img
+            v-if="receta.enlaceImagen"
+            :src="receta.enlaceImagen"
+            class="card-img-top"
+            alt="Imagen receta"
+            style="height: 220px; object-fit: cover"
+          />
+          <div class="card-body">
+            <h3 class="card-title text-truncate text-decoration-underline">
+              {{ receta.nombreReceta }}
+            </h3>
+
+            <p class="card-text mb-1">
+              <strong>Categoría:</strong> {{ receta.Categoria }}
+            </p>
+            <p class="card-text mb-1">
+              <strong>Puntaje:</strong> {{ getEstrellas(receta.puntajeReceta) }}
+            </p>
+            <p class="card-text mb-0">
+              <strong>Ingredientes:</strong> {{ countIngredientes(receta) }}
+            </p>
+          </div>
+        </div>
       </div>
     </div>
+
+    <p v-if="!recetas.length" class="text-muted">No se encontraron recetas.</p>
   </div>
 </template>
 
 <script setup>
-// Aquí irá la lógica para obtener las recetas de la API
+import { ref, onMounted } from "vue";
+import { getAllRecetas } from "../service/api";
+
+const recetas = ref([]);
+
+onMounted(async () => {
+  try {
+    const data = await getAllRecetas();
+    // Agregamos propiedad `favorita` a cada receta
+    recetas.value = data.map((r) => ({ ...r, favorita: false }));
+  } catch (error) {
+    console.error("Error al obtener recetas:", error);
+  }
+});
+
+function countIngredientes(receta) {
+  const ingredientes = [
+    receta.ingrediente1,
+    receta.ingrediente2,
+    receta.ingrediente3,
+    receta.ingrediente4,
+    receta.ingrediente5,
+  ];
+  return ingredientes.filter((i) => i && i.trim() !== "").length;
+}
+
+function getEstrellas(puntaje) {
+  const estrellasLlenas = Math.round(puntaje);
+  const totalEstrellas = 5;
+  const estrellas = [];
+
+  for (let i = 1; i <= totalEstrellas; i++) {
+    estrellas.push(i <= estrellasLlenas ? "★" : "☆");
+  }
+
+  return estrellas.join("");
+}
+
+function toggleFavorita(receta) {
+  receta.favorita = !receta.favorita;
+}
 </script>
 
 <style scoped>
-.recetas {
-  padding: 2rem;
-}
-
-.recetas-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 2rem;
-  margin-top: 2rem;
 }
 
-.receta-card {
-  background-color: #f5f5f5;
-  padding: 1.5rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+.card {
+  margin: 10px;
+  border: 2px solid white !important;
+  border-radius: 0 !important;
+  position: relative;
 }
 
-.receta-card h3 {
-  color: #4CAF50;
-  margin-bottom: 1rem;
+.favorito-btn {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  color: #ccc;
+  cursor: pointer;
+  z-index: 1;
+  transition: color 0.3s;
+  padding: 0;
+  line-height: 1;
+  outline: none; /* quita el contorno del foco */
 }
-</style> 
+
+.favorito-btn:focus {
+  outline: none;
+  box-shadow: none; /* elimina cualquier sombra al hacer clic */
+}
+
+.favorito-btn.activa {
+  color: gold;
+}
+</style>
