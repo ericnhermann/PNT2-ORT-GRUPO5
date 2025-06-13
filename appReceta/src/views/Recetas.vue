@@ -6,7 +6,16 @@
         :key="receta.id"
         class="col-12 col-sm-6 col-md-4 mb-4"
       >
-        <div class="card border border-light border-2">
+        <div class="card border border-light border-2 position-relative">
+          <!-- Estrella de favorito -->
+          <button
+            class="favorito-btn"
+            @click="toggleFavorita(receta)"
+            :class="{ activa: receta.favorita }"
+          >
+            ★
+          </button>
+
           <img
             v-if="receta.enlaceImagen"
             :src="receta.enlaceImagen"
@@ -45,7 +54,9 @@ const recetas = ref([]);
 
 onMounted(async () => {
   try {
-    recetas.value = await getAllRecetas();
+    const data = await getAllRecetas();
+    // Agregamos propiedad `favorita` a cada receta
+    recetas.value = data.map((r) => ({ ...r, favorita: false }));
   } catch (error) {
     console.error("Error al obtener recetas:", error);
   }
@@ -63,7 +74,7 @@ function countIngredientes(receta) {
 }
 
 function getEstrellas(puntaje) {
-  const estrellasLlenas = Math.round(puntaje); // Si querés redondear
+  const estrellasLlenas = Math.round(puntaje);
   const totalEstrellas = 5;
   const estrellas = [];
 
@@ -73,18 +84,49 @@ function getEstrellas(puntaje) {
 
   return estrellas.join("");
 }
+
+function toggleFavorita(receta) {
+  receta.favorita = !receta.favorita;
+}
 </script>
+
 <style scoped>
 .row {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center; /* centra horizontalmente los items */
-  gap: 2rem; /* espacio entre cards */
+  justify-content: center;
+  gap: 2rem;
 }
 
 .card {
-  margin: 10px; /* espacio alrededor de cada card */
+  margin: 10px;
   border: 2px solid white !important;
   border-radius: 0 !important;
+  position: relative;
+}
+
+.favorito-btn {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  color: #ccc;
+  cursor: pointer;
+  z-index: 1;
+  transition: color 0.3s;
+  padding: 0;
+  line-height: 1;
+  outline: none; /* quita el contorno del foco */
+}
+
+.favorito-btn:focus {
+  outline: none;
+  box-shadow: none; /* elimina cualquier sombra al hacer clic */
+}
+
+.favorito-btn.activa {
+  color: gold;
 }
 </style>
