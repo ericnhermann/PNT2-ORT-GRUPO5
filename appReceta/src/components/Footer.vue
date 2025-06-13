@@ -1,56 +1,70 @@
 <template>
-    <footer class ="bg-dark text-white py-4 mt-5">
-        <div class = "Container text-center">
-            <p class = "mb-1 fs-5"> Trabajo Práctico PNT2 </p>
-            <p class = "mb-1 fs-5">Realizado por Hermann Eric Nicolas, Smith Matias Ezequiel, Sosa Gian Axel, Suckewer Tobias, Ventre Julieta  </p>
-          <div class="d-flex justify-content-center gap-3">
-            <a href="https://www.facebook.com/ortargentina" target="_blank" class="text-white">
-              <i class="fab fa-facebook fa-lg"></i>
-            </a>
-            <a href="https://www.instagram.com/ortargentina/" target="_blank" class="text-white">
-              <i class="fab fa-instagram fa-lg"></i>
-            </a>
-            <a href="https://x.com/ORTArgAlumni" target="_blank" class="text-white">
-              <i class="fab fa-twitter fa-lg"></i>
-            </a>
-          </div>
-        </div>
-      </footer>
-    </template>
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-social">
+        <a href="https://www.facebook.com/ortargentina" target="_blank" aria-label="Facebook">
+          <i class="fab fa-facebook fa-lg"></i>
+        </a>
+        <a href="https://www.instagram.com/ortargentina/" target="_blank" aria-label="Instagram">
+          <i class="fab fa-instagram fa-lg"></i>
+        </a>
+        <a href="https://x.com/ORTArgAlumni" target="_blank" aria-label="Twitter/X">
+          <i class="fab fa-twitter fa-lg"></i>
+        </a>
+      </div>
 
-<script setup>
-// Componente Footer
-</script>
+      <div class="footer-info">
+        <p>
+          Trabajo Práctico PNT2 · Realizado por: Hermann Eric Nicolás, Smith Matías Ezequiel, Sosa Gian Axel, Suckewer Tobías, Ventre Julieta
+        </p>
+      </div>
+
+      <div class="footer-rights">
+        <p>© Todos los derechos reservados</p>
+      </div>
+    </div>
+  </footer>
+</template>
 
 <style scoped>
 .footer {
   background-color: #333;
   color: white;
-  padding: 2rem 0;
-  margin-top: auto;
+  padding: 1.5rem 2rem;
+  font-size: 0.9rem;
 }
 
 .footer-content {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 1rem;
-  text-align: center;
-}
-
-.footer-links {
-  margin-top: 1rem;
   display: flex;
-  justify-content: center;
-  gap: 2rem;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
 }
 
-.footer-link {
+.footer-social a {
   color: white;
-  text-decoration: none;
+  margin: 0 0.5rem;
   transition: color 0.3s;
 }
 
-.footer-link:hover {
+.footer-social a:hover {
   color: #4CAF50;
+}
+
+@media (min-width: 768px) {
+  .footer-content {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    text-align: left;
+  }
+
+  .footer-info {
+    max-width: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
 </style>

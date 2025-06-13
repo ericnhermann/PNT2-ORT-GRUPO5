@@ -4,39 +4,27 @@ import Footer from './components/Footer.vue'
 </script>
 
 <template>
-  <div class="app-container">
+  <div class="app">
     <NavBar />
     <main class="main-content">
-      <router-view></router-view>
+      <router-view />
     </main>
     <Footer />
   </div>
 </template>
 
-<style>
-.app-container {
-  min-height: 100vh;
+<style scoped>
+.app {
   display: flex;
   flex-direction: column;
+  min-height: 100vh;
 }
 
 .main-content {
   flex: 1;
-  padding: 2rem;
   max-width: 1200px;
   margin: 0 auto;
-  width: 100%;
-}
-
-/* Estilos globales */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: Arial, sans-serif;
-  line-height: 1.6;
+  padding: 2rem;
 }
 </style>
+
