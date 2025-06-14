@@ -4,7 +4,7 @@ import Recetas from "../views/Recetas.vue";
 import LoginView from "../views/LoginView.vue";
 import PerfilView from "../views/PerfilView.vue";
 import { useAuthStore } from "../stores/auth";
-// import RecetaDetalleView from "../views/RecetaDetalleView.vue";
+import RecetaDetalleView from "../views/RecetaDetalleView.vue";
 
 const routes = [
   {
@@ -26,13 +26,14 @@ const routes = [
     path: "/perfil",
     name: "Perfil",
     component: PerfilView,
-    meta: { requiresAuth: true }
+    meta: { requiresAuth: true },
   },
-  // {
-  //   path: "/receta/:id",
-  //   name: "RecetaDetalleView",
-  //   component: RecetaDetalleView,
-  // },
+  {
+    path: "/receta/:id",
+    name: "RecetaDetalleView",
+    component: RecetaDetalleView,
+    props: true,
+  },
 ];
 
 const router = createRouter({
@@ -42,9 +43,9 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore();
-  
+
   if (to.meta.requiresAuth && !authStore.isLoggedIn) {
-    next('/login');
+    next("/login");
   } else {
     next();
   }

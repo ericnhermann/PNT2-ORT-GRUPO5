@@ -6,11 +6,15 @@
         :key="receta.id"
         class="col-12 col-sm-6 col-md-4 mb-4"
       >
-        <div class="card border border-light border-2 position-relative">
+        <div
+          class="card border border-light border-2 position-relative"
+          style="cursor: pointer"
+          @click="irADetalle(receta.id)"
+        >
           <!-- Estrella de favorito -->
           <button
             class="favorito-btn"
-            @click="toggleFavorita(receta)"
+            @click.stop="toggleFavorita(receta)"
             :class="{ activa: receta.favorita }"
           >
             ★
@@ -48,8 +52,10 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
 import { getAllRecetas } from "../service/api";
 
+const router = useRouter();
 const recetas = ref([]);
 
 onMounted(async () => {
@@ -87,6 +93,10 @@ function getEstrellas(puntaje) {
 
 function toggleFavorita(receta) {
   receta.favorita = !receta.favorita;
+}
+
+function irADetalle(id) {
+  router.push({ name: "RecetaDetalleView", params: { id: id.toString() } });
 }
 </script>
 
