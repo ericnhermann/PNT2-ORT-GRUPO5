@@ -5,16 +5,39 @@
     <div class="navbar-menu">
       <router-link to="/" class="navbar-item">Inicio</router-link>
       <router-link to="/recetas" class="navbar-item">Recetas</router-link>
-      <router-link to="/cuenta" class="navbar-item">Cuenta</router-link>
       <router-link to="/acerca" class="navbar-item">Acerca De</router-link>
     </div>
 
-    <div class="navbar-search">
-      <input v-model="busqueda" type="text" placeholder="Buscar receta..." />
-      <button @click="buscar">Buscar</button>
+    <div class="navbar-right">
+      <div class="navbar-search">
+        <input v-model="busqueda" type="text" placeholder="Buscar receta..." />
+        <button @click="buscar">Buscar</button>
+      </div>
+      
+      <div v-if="!isLoggedIn" class="navbar-auth">
+        <router-link to="/login" class="auth-button">Iniciar Sesión</router-link>
+      </div>
+      <div v-else class="navbar-auth">
+        <router-link to="/perfil" class="auth-button">Mi Perfil</router-link>
+      </div>
     </div>
   </nav>
 </template>
+
+<script setup>
+import { ref, computed } from 'vue'
+import { useAuthStore } from '../stores/auth'
+
+const busqueda = ref('')
+const authStore = useAuthStore()
+
+const isLoggedIn = computed(() => authStore.isLoggedIn)
+
+const buscar = () => {
+  // Implementar lógica de búsqueda
+  console.log('Buscando:', busqueda.value)
+}
+</script>
 
 <style scoped>
 .navbar {
@@ -57,6 +80,12 @@
   background-color: rgba(255, 255, 255, 0.15);
 }
 
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
 .navbar-search {
   display: flex;
   gap: 0.5rem;
@@ -89,6 +118,27 @@
 }
 
 .navbar-search button:hover {
+  background-color: white;
+  color: #4CAF50;
+}
+
+.navbar-auth {
+  margin-left: 1rem;
+}
+
+.auth-button {
+  padding: 0.4rem 0.8rem;
+  border: 2px solid white;
+  background-color: transparent;
+  color: white;
+  border-radius: 5px;
+  font-weight: bold;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.auth-button:hover {
   background-color: white;
   color: #4CAF50;
 }
