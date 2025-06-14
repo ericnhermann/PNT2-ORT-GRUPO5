@@ -1,8 +1,18 @@
 <template>
   <div class="container py-4">
+    <!-- Buscador -->
+    <div class="mb-4 buscador-wrapper">
+      <input
+        type="text"
+        v-model="busqueda"
+        placeholder="Buscar..."
+        class="form-control buscador"
+      />
+    </div>
+
     <div class="row">
       <div
-        v-for="receta in recetas"
+        v-for="receta in recetasFiltradas"
         :key="receta.id"
         class="col-12 col-sm-6 col-md-4 mb-4"
       >
@@ -46,26 +56,36 @@
       </div>
     </div>
 
-    <p v-if="!recetas.length" class="text-muted">No se encontraron recetas.</p>
+    <p v-if="!recetasFiltradas.length" class="text-muted text-center">
+      No se encontraron recetas.
+    </p>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import { getAllRecetas } from "../service/api";
 
 const router = useRouter();
 const recetas = ref([]);
+const busqueda = ref("");
 
 onMounted(async () => {
   try {
     const data = await getAllRecetas();
-    // Agregamos propiedad `favorita` a cada receta
     recetas.value = data.map((r) => ({ ...r, favorita: false }));
   } catch (error) {
     console.error("Error al obtener recetas:", error);
   }
+});
+
+const recetasFiltradas = computed(() => {
+  const texto = busqueda.value.toLowerCase().trim();
+  if (!texto) return recetas.value;
+  return recetas.value.filter((receta) =>
+    receta.nombreReceta?.toLowerCase().includes(texto)
+  );
 });
 
 function countIngredientes(receta) {
@@ -128,15 +148,29 @@ function irADetalle(id) {
   transition: color 0.3s;
   padding: 0;
   line-height: 1;
-  outline: none; /* quita el contorno del foco */
+  outline: none;
 }
 
 .favorito-btn:focus {
   outline: none;
-  box-shadow: none; /* elimina cualquier sombra al hacer clic */
+  box-shadow: none;
 }
 
 .favorito-btn.activa {
   color: gold;
+}
+
+.buscador-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.buscador {
+  max-width: 500px;
+  width: 100%;
+  font-size: 1.2rem;
+  padding: 0.6rem 1rem;
+  border-radius: 0.5rem;
 }
 </style>
