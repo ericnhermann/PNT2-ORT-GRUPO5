@@ -1,18 +1,9 @@
 <template>
   <div class="container py-4">
-    <!-- Buscador -->
-    <div class="mb-4 buscador-wrapper">
-      <input
-        type="text"
-        v-model="busqueda"
-        placeholder="Buscar..."
-        class="form-control buscador"
-      />
-    </div>
-
+    <h2 class="mb-4 text-center">Mis Recetas Favoritas</h2>
     <div class="row">
       <div
-        v-for="receta in recetasFiltradas"
+        v-for="receta in recetasFavoritas"
         :key="receta.id"
         class="col-12 col-sm-6 col-md-4 mb-4"
       >
@@ -21,15 +12,12 @@
           style="cursor: pointer"
           @click="irADetalle(receta.id)"
         >
-          <!-- Estrella de favorito -->
           <button
-            class="favorito-btn"
+            class="favorito-btn activa"
             @click.stop="toggleFavorita(receta)"
-            :class="{ activa: receta.favorita }"
           >
             ★
           </button>
-
           <img
             v-if="receta.enlaceImagen"
             :src="receta.enlaceImagen"
@@ -41,7 +29,6 @@
             <h3 class="card-title text-truncate text-decoration-underline">
               {{ receta.nombreReceta }}
             </h3>
-
             <p class="card-text mb-1">
               <strong>Categoría:</strong> {{ receta.Categoria }}
             </p>
@@ -55,9 +42,8 @@
         </div>
       </div>
     </div>
-
-    <p v-if="!recetasFiltradas.length" class="text-muted text-center">
-      No se encontraron recetas.
+    <p v-if="!recetasFavoritas.length" class="text-muted text-center">
+      No tenés recetas favoritas.
     </p>
   </div>
 </template>
@@ -69,11 +55,11 @@ import { getAllRecetas } from "../service/api";
 
 const router = useRouter();
 const recetas = ref([]);
-const busqueda = ref("");
 
 onMounted(async () => {
   try {
     const data = await getAllRecetas();
+    // Recuperar favoritos del localStorage
     const favoritos = JSON.parse(localStorage.getItem("favoritos") || "[]");
     recetas.value = data.map((r) => ({
       ...r,
@@ -84,13 +70,9 @@ onMounted(async () => {
   }
 });
 
-const recetasFiltradas = computed(() => {
-  const texto = busqueda.value.toLowerCase().trim();
-  if (!texto) return recetas.value;
-  return recetas.value.filter((receta) =>
-    receta.nombreReceta?.toLowerCase().includes(texto)
-  );
-});
+const recetasFavoritas = computed(() =>
+  recetas.value.filter((receta) => receta.favorita)
+);
 
 function countIngredientes(receta) {
   const ingredientes = [
@@ -117,6 +99,7 @@ function getEstrellas(puntaje) {
 
 function toggleFavorita(receta) {
   receta.favorita = !receta.favorita;
+  // Guardar favoritos en localStorage
   const favoritos = recetas.value
     .filter((r) => r.favorita)
     .map((r) => r.id);
@@ -129,6 +112,7 @@ function irADetalle(id) {
 </script>
 
 <style scoped>
+/* Usá los mismos estilos que en Recetas.vue */
 .row {
   display: flex;
   flex-wrap: wrap;
@@ -150,7 +134,7 @@ function irADetalle(id) {
   background: transparent;
   border: none;
   font-size: 24px;
-  color: #ccc;
+  color: gold;
   cursor: pointer;
   z-index: 1;
   transition: color 0.3s;
@@ -162,10 +146,6 @@ function irADetalle(id) {
 .favorito-btn:focus {
   outline: none;
   box-shadow: none;
-}
-
-.favorito-btn.activa {
-  color: gold;
 }
 
 .buscador-wrapper {

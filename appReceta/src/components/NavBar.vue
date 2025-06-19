@@ -5,6 +5,7 @@
     <div class="navbar-menu">
       <router-link to="/" class="navbar-item">Inicio</router-link>
       <router-link to="/recetas" class="navbar-item">Recetas</router-link>
+      <router-link to="/favoritos" class="navbar-item">Favoritos</router-link>
       <router-link to="/acerca" class="navbar-item">Acerca De</router-link>
     </div>
 
@@ -41,7 +42,6 @@ const buscar = () => {
 
 <style scoped>
 .navbar {
-  position: relative;
   width: 100%;
   background-color: #4CAF50;
   padding: 1rem 2rem;
@@ -49,6 +49,7 @@ const buscar = () => {
   align-items: center;
   justify-content: space-between;
   box-sizing: border-box;
+  gap: 1.5rem;
 }
 
 .navbar-title {
@@ -57,14 +58,14 @@ const buscar = () => {
   font-weight: bold;
   text-decoration: none;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .navbar-menu {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
   display: flex;
-  gap: 1.5rem;       
+  gap: 1.5rem;
+  flex: 1 1 auto;
+  justify-content: center;
 }
 
 .navbar-item {
@@ -84,6 +85,7 @@ const buscar = () => {
   display: flex;
   align-items: center;
   gap: 1rem;
+  flex-shrink: 0;
 }
 
 .navbar-search {
@@ -141,5 +143,24 @@ const buscar = () => {
 .auth-button:hover {
   background-color: white;
   color: #4CAF50;
+}
+
+/* Responsive: apilar en pantallas chicas */
+@media (max-width: 900px) {
+  .navbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+    padding: 1rem;
+  }
+  .navbar-menu {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+  }
+  .navbar-right {
+    justify-content: flex-end;
+  }
 }
 </style>

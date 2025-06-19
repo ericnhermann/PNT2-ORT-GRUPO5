@@ -18,6 +18,11 @@ const routes = [
     component: Recetas,
   },
   {
+  path: '/favoritos',
+  name: 'Favoritos',
+  component: () => import('../views/Favoritos.vue')
+  },
+  {
     path: "/login",
     name: "Login",
     component: LoginView,
