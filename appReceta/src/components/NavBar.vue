@@ -9,13 +9,10 @@
     </div>
 
     <div class="navbar-right">
-      <div class="navbar-search">
-        <input v-model="busqueda" type="text" placeholder="Buscar receta..." />
-        <button @click="buscar">Buscar</button>
-      </div>
-      
       <div v-if="!isLoggedIn" class="navbar-auth">
-        <router-link to="/login" class="auth-button">Iniciar Sesión</router-link>
+        <router-link to="/login" class="auth-button"
+          >Iniciar Sesión</router-link
+        >
       </div>
       <div v-else class="navbar-auth">
         <router-link to="/perfil" class="auth-button">Mi Perfil</router-link>
@@ -25,25 +22,25 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import { useAuthStore } from '../stores/auth'
+import { ref, computed } from "vue";
+import { useAuthStore } from "../stores/auth";
 
-const busqueda = ref('')
-const authStore = useAuthStore()
+const busqueda = ref("");
+const authStore = useAuthStore();
 
-const isLoggedIn = computed(() => authStore.isLoggedIn)
+const isLoggedIn = computed(() => authStore.isLoggedIn);
 
 const buscar = () => {
   // Implementar lógica de búsqueda
-  console.log('Buscando:', busqueda.value)
-}
+  console.log("Buscando:", busqueda.value);
+};
 </script>
 
 <style scoped>
 .navbar {
   position: relative;
   width: 100%;
-  background-color: #4CAF50;
+  background-color: #4caf50;
   padding: 1rem 2rem;
   display: flex;
   align-items: center;
@@ -64,7 +61,7 @@ const buscar = () => {
   left: 50%;
   transform: translateX(-50%);
   display: flex;
-  gap: 1.5rem;       
+  gap: 1.5rem;
 }
 
 .navbar-item {
@@ -119,7 +116,7 @@ const buscar = () => {
 
 .navbar-search button:hover {
   background-color: white;
-  color: #4CAF50;
+  color: #4caf50;
 }
 
 .navbar-auth {
@@ -140,6 +137,6 @@ const buscar = () => {
 
 .auth-button:hover {
   background-color: white;
-  color: #4CAF50;
+  color: #4caf50;
 }
 </style>
