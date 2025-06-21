@@ -11,7 +11,7 @@ const crear = async (receta) => {
   try {
     await createReceta(receta);
     mensaje.value = 'Receta guardada con éxito';
-    router.push('/recetas');
+    router.push('/MisRecetas');
   } catch (e) {
     mensaje.value = 'Error al guardar receta';
   }

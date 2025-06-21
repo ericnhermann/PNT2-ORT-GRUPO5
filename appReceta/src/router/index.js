@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
+import MisRecetas from '../views/MisRecetas.vue'
  
 const routes = [
   {
@@ -16,6 +17,11 @@ const routes = [
     path: '/CrearReceta',
     name: 'FormCreate',
     component: () => import('../views/RecetasCreate.vue')
+  },
+  {
+    path: '/mis-Recetas',
+    name: 'mis Recetas',
+    component: () => import ('../views/MisRecetas.vue')
   }
 ]
 

@@ -43,6 +43,7 @@ const enviar = () => {
   };
 
   emit('submit', recetaFinal);
+   router.push('/MisRecetas'); 
 };
 </script>
 
@@ -147,7 +148,7 @@ const enviar = () => {
 }
 
 .btn-success:hover {
-  background-color: #00b06c;
+  background-color: #61b26e;
 }
 
 img {
