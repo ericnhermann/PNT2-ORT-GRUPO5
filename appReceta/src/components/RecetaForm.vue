@@ -100,11 +100,70 @@ const enviar = () => {
 
 <style scoped>
 .formulario-receta {
-  background-color: #222; /* fondo oscuro */
-  padding: 2rem;
-  border-radius: 12px;
+  background-color: #1e1e1e; 
+  padding: 2.5rem;
+  border-radius: 16px;
   max-width: 600px;
-  margin: auto;
-  box-shadow: 0 0 15px rgba(0, 255, 100, 0.2); /* sombra verde */
+  margin: 3rem auto;
+  box-shadow: 0 8px 24px rgba(255, 255, 255, 0.2); 
+  color: #fff;
+}
+
+.mb-3 {
+  margin-bottom: 1.5rem;
+}
+
+.form-label {
+  font-weight: bold;
+  color: #ffffff; 
+}
+
+.form-control {
+  background-color: #2a2a2a;
+  border: 1px solid #444;
+  color: #fff;
+  border-radius: 8px;
+  padding: 0.75rem;
+  font-size: 1rem;
+}
+
+.form-control::placeholder {
+  color: #bbb;
+}
+
+.form-control:focus {
+  border-color: #fdfdfd;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(12, 15, 14, 0.576);
+}
+
+.btn-success {
+  background-color: #575f68;
+  border: none;
+  padding: 0.6rem 2rem;
+  font-weight: bold;
+  border-radius: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.btn-success:hover {
+  background-color: #00b06c;
+}
+
+img {
+  border-radius: 12px;
+  max-width: 100%;
+  max-height: 200px;
+  object-fit: cover;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 </style>
+
+
+
+
+
+
+
+
+
