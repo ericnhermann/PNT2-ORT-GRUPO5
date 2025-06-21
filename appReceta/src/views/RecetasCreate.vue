@@ -1,0 +1,27 @@
+<script setup>
+import RecetaForm from '../components/RecetaForm.vue';
+import { createReceta } from '../service/api';
+import { useRouter } from 'vue-router';
+import { ref } from 'vue';
+
+const router = useRouter();
+const mensaje = ref('');
+
+const crear = async (receta) => {
+  try {
+    await createReceta(receta);
+    mensaje.value = 'Receta guardada con éxito';
+    router.push('/recetas');
+  } catch (e) {
+    mensaje.value = 'Error al guardar receta';
+  }
+};
+</script>
+
+<template>
+  <div class="container mt-4">
+    <h2 class="mb-4 text-success">Crear nueva receta</h2>
+    <RecetaForm @submit="crear" />
+    <div v-if="mensaje" class="alert alert-info mt-3">{{ mensaje }}</div>
+  </div>
+</template>
