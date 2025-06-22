@@ -10,10 +10,12 @@
           <p>Descubre nuevas recetas de todo el mundo</p>
         </div>
       </router-link>
-      <div class="feature-card">
-        <h3>Comparte</h3>
-        <p>Compartí tus propias recetas con la comunidad</p>
-      </div>
+       <router-link to="/CrearReceta" class="feature-card-link">
+        <div class="feature-card">
+          <h3>Comparte</h3>
+          <p>Subí tus propias recetas y Compartilas con la comunidad</p>
+        </div>
+      </router-link>
       <div class="feature-card">
         <h3>Guarda Favoritos</h3>
         <p>Accedé fácil a tus recetas favoritas</p>

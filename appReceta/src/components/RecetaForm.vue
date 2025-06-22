@@ -43,6 +43,10 @@ const enviar = () => {
   };
 
   emit('submit', recetaFinal);
+  const recetasGuardadas = JSON.parse(localStorage.getItem('recetas')) || [];
+  recetaFinal.id = Date.now(); 
+  recetasGuardadas.push(recetaFinal);
+  localStorage.setItem('recetas', JSON.stringify(recetasGuardadas));
    router.push('/MisRecetas'); 
 };
 </script>
@@ -101,13 +105,13 @@ const enviar = () => {
 
 <style scoped>
 .formulario-receta {
-  background-color: #1e1e1e; 
+  background-color: #f5f5f5; 
   padding: 2.5rem;
   border-radius: 16px;
   max-width: 600px;
   margin: 3rem auto;
-  box-shadow: 0 8px 24px rgba(255, 255, 255, 0.2); 
-  color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+  color: #333;
 }
 
 .mb-3 {
@@ -116,39 +120,45 @@ const enviar = () => {
 
 .form-label {
   font-weight: bold;
-  color: #ffffff; 
+  color: #4caf50; 
+  margin-bottom: 0.5rem;
+  display: block;
 }
 
 .form-control {
-  background-color: #2a2a2a;
-  border: 1px solid #444;
-  color: #fff;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  color: #333;
   border-radius: 8px;
   padding: 0.75rem;
   font-size: 1rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .form-control::placeholder {
-  color: #bbb;
+  color: #999;
 }
 
 .form-control:focus {
-  border-color: #fdfdfd;
+  border-color: #4caf50;
   outline: none;
-  box-shadow: 0 0 0 2px rgba(12, 15, 14, 0.576);
+  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.3);
 }
 
 .btn-success {
-  background-color: #575f68;
+  background-color: #4caf50;
+  color: white;
   border: none;
   padding: 0.6rem 2rem;
   font-weight: bold;
   border-radius: 10px;
   transition: background-color 0.3s ease;
+  cursor: pointer;
 }
 
 .btn-success:hover {
-  background-color: #61b26e;
+  background-color: #45a049;
 }
 
 img {
@@ -156,10 +166,9 @@ img {
   max-width: 100%;
   max-height: 200px;
   object-fit: cover;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 </style>
-
 
 
 

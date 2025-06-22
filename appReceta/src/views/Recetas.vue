@@ -73,12 +73,19 @@ const busqueda = ref("");
 
 onMounted(async () => {
   try {
-    const data = await getAllRecetas();
-    recetas.value = data.map((r) => ({ ...r, favorita: false }));
+    const data = await getAllRecetas(); 
+    const local = JSON.parse(localStorage.getItem('recetas')) || []; 
+
+  
+    recetas.value = [
+      ...data.map((r) => ({ ...r, favorita: false })), 
+      ...local.map((r) => ({ ...r, favorita: false })) 
+    ];
   } catch (error) {
     console.error("Error al obtener recetas:", error);
   }
 });
+
 
 const recetasFiltradas = computed(() => {
   const texto = busqueda.value.toLowerCase().trim();
