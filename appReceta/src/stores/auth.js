@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { loginUser } from '../service/api'
 
 // Credenciales de prueba
 const USERS = [
@@ -7,20 +8,17 @@ const USERS = [
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    user: null,
-    isAuthenticated: false
+    user: JSON.parse(localStorage.getItem('user')) || null,
+    isAuthenticated: !!localStorage.getItem('user')
   }),
   
   actions: {
-    login(username, password) {
-      // Buscar usuario en las credenciales de prueba
-      const user = USERS.find(u => 
-        u.username === username && u.password === password
-      )
-      
+    async login(username, password) {
+      const user = await loginUser(username, password)
       if (user) {
-        this.user = { username: user.username }
+        this.user = { username: user.name, id: user.id }
         this.isAuthenticated = true
+        localStorage.setItem('user', JSON.stringify(this.user))
         return true
       }
       return false
@@ -29,6 +27,7 @@ export const useAuthStore = defineStore('auth', {
     logout() {
       this.user = null
       this.isAuthenticated = false
+      localStorage.removeItem('user')
     }
   },
   

@@ -5,6 +5,7 @@ import LoginView from "../views/LoginView.vue";
 import PerfilView from "../views/PerfilView.vue";
 import { useAuthStore } from "../stores/auth";
 import RecetaDetalleView from "../views/RecetaDetalleView.vue";
+import RegisterView from "../views/RegisterView.vue";
 
 const routes = [
   {
@@ -33,6 +34,11 @@ const routes = [
     name: "RecetaDetalleView",
     component: RecetaDetalleView,
     props: true,
+  },
+  {
+    path: "/register",
+    name: "Register",
+    component: RegisterView,
   },
 ];
 
