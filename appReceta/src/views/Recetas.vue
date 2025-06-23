@@ -1,176 +1,194 @@
 <template>
   <div class="container py-4">
-    <!-- Buscador -->
     <div class="mb-4 buscador-wrapper">
       <input
-        type="text"
         v-model="busqueda"
+        type="text"
         placeholder="Buscar..."
         class="form-control buscador"
       />
     </div>
 
-    <div class="row">
+    <div class="recetas-grid">
       <div
         v-for="receta in recetasFiltradas"
         :key="receta.id"
-        class="col-12 col-sm-6 col-md-4 mb-4"
+        class="recetas-card"
+        @click="irADetalle(receta.id)"
       >
-        <div
-          class="card border border-light border-2 position-relative"
-          style="cursor: pointer"
-          @click="irADetalle(receta.id)"
-        >
-          <!-- Estrella de favorito -->
-          <button
-            class="favorito-btn"
-            @click.stop="toggleFavorita(receta)"
-            :class="{ activa: receta.favorita }"
-          >
-            ★
-          </button>
+        <button
+          class="favorito-btn"
+          @click.stop="toggleFavorita(receta)"
+          :class="{ activa: receta.favorita }"
+          aria-label="Favorita"
+        >★</button>
 
-          <img
-            v-if="receta.enlaceImagen"
-            :src="receta.enlaceImagen"
-            class="card-img-top"
-            alt="Imagen receta"
-            style="height: 220px; object-fit: cover"
-          />
-          <div class="card-body">
-            <h3 class="card-title text-truncate text-decoration-underline">
-              {{ receta.nombreReceta }}
-            </h3>
+        <img
+          v-if="receta.enlaceImagen"
+          :src="receta.enlaceImagen"
+          alt="Imagen receta"
+          class="receta-img"
+        />
 
-            <p class="card-text mb-1">
-              <strong>Categoría:</strong> {{ receta.Categoria }}
-            </p>
-            <p class="card-text mb-1">
-              <strong>Puntaje:</strong> {{ getEstrellas(receta.puntajeReceta) }}
-            </p>
-            <p class="card-text mb-0">
-              <strong>Ingredientes:</strong> {{ countIngredientes(receta) }}
-            </p>
-          </div>
+        <div class="receta-body">
+          <h3 class="receta-titulo">{{ receta.nombreReceta }}</h3>
+          <p class="receta-texto"><strong>Categoría:</strong> {{ receta.categoria || 'Sin categoría' }}</p>
+          <p class="receta-texto"><strong>Puntaje:</strong> {{ getEstrellas(receta.puntajeReceta) }}</p>
+          <p class="receta-texto"><strong>Ingredientes:</strong> {{ countIngredientes(receta) }}</p>
         </div>
       </div>
     </div>
 
-    <p v-if="!recetasFiltradas.length" class="text-muted text-center">
+    <p v-if="!recetasFiltradas.length" class="text-center text-muted mt-4">
       No se encontraron recetas.
     </p>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from "vue";
-import { useRouter } from "vue-router";
-import { getAllRecetas } from "../service/api";
+import { ref, onMounted, computed } from 'vue'
+import { useRouter } from 'vue-router'
+import { getAllRecetas } from '../service/api'
 
-const router = useRouter();
-const recetas = ref([]);
-const busqueda = ref("");
+const router = useRouter()
+const recetas = ref([])
+const busqueda = ref('')
 
 onMounted(async () => {
   try {
-    const data = await getAllRecetas();
-    recetas.value = data.map((r) => ({ ...r, favorita: false }));
-  } catch (error) {
-    console.error("Error al obtener recetas:", error);
+    const data = await getAllRecetas()
+    recetas.value = data.map(r => ({ ...r, favorita: false }))
+  } catch {
+    console.error('Error al cargar recetas')
   }
-});
+})
 
 const recetasFiltradas = computed(() => {
-  const texto = busqueda.value.toLowerCase().trim();
-  if (!texto) return recetas.value;
-  return recetas.value.filter((receta) =>
-    receta.nombreReceta?.toLowerCase().includes(texto)
-  );
-});
+  const t = busqueda.value.toLowerCase().trim()
+  return recetas.value.filter(r =>
+    r.nombreReceta?.toLowerCase().includes(t)
+  )
+})
 
-function countIngredientes(receta) {
-  const ingredientes = [
-    receta.ingrediente1,
-    receta.ingrediente2,
-    receta.ingrediente3,
-    receta.ingrediente4,
-    receta.ingrediente5,
-  ];
-  return ingredientes.filter((i) => i && i.trim() !== "").length;
+function countIngredientes(r) {
+  return [r.ingrediente1, r.ingrediente2, r.ingrediente3, r.ingrediente4, r.ingrediente5]
+    .filter(i => i && i.trim()).length
 }
 
-function getEstrellas(puntaje) {
-  const estrellasLlenas = Math.round(puntaje);
-  const totalEstrellas = 5;
-  const estrellas = [];
-
-  for (let i = 1; i <= totalEstrellas; i++) {
-    estrellas.push(i <= estrellasLlenas ? "★" : "☆");
-  }
-
-  return estrellas.join("");
+function getEstrellas(score) {
+  const llenas = Math.round(score)
+  return Array.from({ length: 5 }, (_, i) => i < llenas ? '★' : '☆').join('')
 }
 
-function toggleFavorita(receta) {
-  receta.favorita = !receta.favorita;
+function toggleFavorita(r) {
+  r.favorita = !r.favorita
 }
 
 function irADetalle(id) {
-  router.push({ name: "RecetaDetalleView", params: { id: id.toString() } });
+  router.push({ name: 'RecetaDetalleView', params: { id: id.toString() } })
 }
 </script>
 
 <style scoped>
-.row {
+.buscador-wrapper {
   display: flex;
-  flex-wrap: wrap;
   justify-content: center;
-  gap: 2rem;
+  margin-bottom: 2rem;
+}
+.buscador {
+  width: 100%;
+  max-width: 500px;
+  padding: 0.6rem 1rem;
+  font-size: 1.1rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
 }
 
-.card {
-  margin: 10px;
-  border: 2px solid white !important;
-  border-radius: 0 !important;
+.recetas-grid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(1, 1fr);
+}
+@media (min-width: 576px) {
+  .recetas-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (min-width: 768px) {
+  .recetas-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+@media (min-width: 1024px) {
+  .recetas-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.recetas-card {
+  background: #fff;
+  border: 2px solid #eee;
+  border-radius: 12px;
+  overflow: hidden;
   position: relative;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+}
+.recetas-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+
+.receta-img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+}
+
+.receta-body {
+  padding: 1rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.receta-titulo {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #222;
+}
+.receta-texto {
+  color: #444;
+  margin-bottom: 0.4rem;
+  line-height: 1.3;
+}
+.receta-texto:last-child {
+  margin-bottom: 0;
 }
 
 .favorito-btn {
   position: absolute;
-  top: 8px;
-  left: 8px;
-  background: transparent;
+  top: 6px; right: 10px;
+  width: 38px; height: 38px;
+  background: rgba(0,0,0,0.6);
   border: none;
-  font-size: 24px;
-  color: #ccc;
-  cursor: pointer;
-  z-index: 1;
-  transition: color 0.3s;
-  padding: 0;
-  line-height: 1;
-  outline: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  line-height: 1; 
+  color: #fff;
+  transition: background 0.2s, color 0.2s;
 }
-
-.favorito-btn:focus {
-  outline: none;
-  box-shadow: none;
+.favorito-btn:hover {
+  background: rgba(0,0,0,0.8);
 }
-
 .favorito-btn.activa {
   color: gold;
-}
-
-.buscador-wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.buscador {
-  max-width: 500px;
-  width: 100%;
-  font-size: 1.2rem;
-  padding: 0.6rem 1rem;
-  border-radius: 0.5rem;
 }
 </style>
