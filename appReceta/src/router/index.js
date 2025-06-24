@@ -6,6 +6,7 @@ import PerfilView from "../views/PerfilView.vue";
 import { useAuthStore } from "../stores/auth";
 import RecetaDetalleView from "../views/RecetaDetalleView.vue";
 import RegisterView from "../views/RegisterView.vue";
+import FavoritosView from '../views/FavoritosView.vue';
 
 const routes = [
   {
@@ -40,6 +41,12 @@ const routes = [
     name: "Register",
     component: RegisterView,
   },
+
+  {
+  path: '/favoritos',
+  name: 'FavoritosView',
+  component: FavoritosView
+},
 ];
 
 const router = createRouter({
