@@ -5,6 +5,7 @@
     <div class="navbar-menu">
       <router-link to="/" class="navbar-item">Inicio</router-link>
       <router-link to="/recetas" class="navbar-item">Recetas</router-link>
+      <router-link to="/favoritos" class="navbar-item">Favoritos</router-link>
       <router-link to="/acerca" class="navbar-item">Acerca De</router-link>
     </div>
 
@@ -39,7 +40,6 @@ const logout = () => {
 };
 
 const buscar = () => {
-  // Implementar lógica de búsqueda
   console.log("Buscando:", busqueda.value);
 };
 </script>

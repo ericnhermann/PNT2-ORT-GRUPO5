@@ -1,18 +1,21 @@
 <template>
   <div class="container py-4">
-    <!-- Buscador -->
-    <div class="mb-4 buscador-wrapper">
+    <h2 class="text-center mb-4">Mis Recetas Favoritas</h2>
+    
+    <!-- Buscador - Solo se muestra si hay favoritos -->
+    <div class="mb-4 buscador-wrapper" v-if="recetasFavoritas.length > 0">
       <input
         type="text"
         v-model="busqueda"
-        placeholder="Buscar..."
+        placeholder="Buscar en favoritos..."
         class="form-control buscador"
       />
     </div>
 
-    <div class="row">
+    <!-- Lista de recetas favoritas -->
+    <div class="row" v-if="favoritosFiltrados.length > 0">
       <div
-        v-for="receta in recetasFiltradas"
+        v-for="receta in favoritosFiltrados"
         :key="receta.id"
         class="col-12 col-sm-6 col-md-4 mb-4"
       >
@@ -21,11 +24,11 @@
           style="cursor: pointer"
           @click="irADetalle(receta.id)"
         >
+          <!-- Estrella de favorito - siempre activa en esta vista -->
           <button
-            class="favorito-btn"
-            @click.stop="toggleFavorita(receta)"
-            :class="{ activa: esFavorita(receta.id) }"
-            :title="esFavorita(receta.id) ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+            class="favorito-btn activa"
+            @click.stop="eliminarDeFavoritos(receta.id)"
+            title="Quitar de favoritos"
           >
             ★
           </button>
@@ -56,22 +59,41 @@
       </div>
     </div>
 
-    <p v-if="!recetasFiltradas.length" class="text-muted text-center">
-      No se encontraron recetas.
-    </p>
+    <!-- Mensaje cuando no hay favoritos -->
+    <div v-else-if="recetasFavoritas.length === 0" class="text-center py-5">
+      <div class="mb-4">
+        <i class="fas fa-heart" style="font-size: 4rem; color: #ccc;"></i>
+      </div>
+      <h4 class="text-muted mb-3">No tienes recetas favoritas</h4>
+      <p class="text-muted mb-4">
+        Explora nuestras recetas y marca las que más te gusten con la estrella ★
+      </p>
+      <router-link to="/recetas" class="btn btn-success btn-lg">
+        Ver Recetas
+      </router-link>
+    </div>
+
+    <!-- Mensaje cuando no hay resultados de búsqueda -->
+    <div v-else class="text-center py-3">
+      <p class="text-muted">
+        No se encontraron recetas favoritas que coincidan con tu búsqueda.
+      </p>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from "vue";
+// FavoritosView.vue
+import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { getAllRecetas } from "../service/api";
 
 const router = useRouter();
-const recetas = ref([]);
+const recetas = ref([]); // Todas las recetas
+const favoritos = ref([]); // IDs de recetas favoritas
 const busqueda = ref("");
-const favoritos = ref([]);
 
+// Cargar recetas y favoritos al montar el componente
 onMounted(async () => {
   try {
     const data = await getAllRecetas();
@@ -82,6 +104,7 @@ onMounted(async () => {
   }
 });
 
+// Cargar favoritos desde localStorage
 function cargarFavoritos() {
   const favoritosGuardados = localStorage.getItem("favoritos");
   if (favoritosGuardados) {
@@ -91,35 +114,35 @@ function cargarFavoritos() {
   }
 }
 
+// Guardar favoritos en localStorage
 function guardarFavoritos() {
   localStorage.setItem("favoritos", JSON.stringify(favoritos.value));
 }
 
-function esFavorita(recetaId) {
-  return favoritos.value.includes(recetaId);
-}
+// Computed: recetas que están en favoritos
+const recetasFavoritas = computed(() => {
+  return recetas.value.filter(receta => favoritos.value.includes(receta.id));
+});
 
-function toggleFavorita(receta) {
-  const indice = favoritos.value.indexOf(receta.id);
-  
-  if (indice === -1) {
-    favoritos.value.push(receta.id);
-  } else {
-    favoritos.value.splice(indice, 1);
-  }
-  
-  // Guardar cambios en localStorage
-  guardarFavoritos();
-}
-
-const recetasFiltradas = computed(() => {
+// Computed: filtrar favoritos según búsqueda
+const favoritosFiltrados = computed(() => {
   const texto = busqueda.value.toLowerCase().trim();
-  if (!texto) return recetas.value;
-  return recetas.value.filter((receta) =>
+  if (!texto) return recetasFavoritas.value;
+  return recetasFavoritas.value.filter((receta) =>
     receta.nombreReceta?.toLowerCase().includes(texto)
   );
 });
 
+// Eliminar receta de favoritos
+function eliminarDeFavoritos(recetaId) {
+  const indice = favoritos.value.indexOf(recetaId);
+  if (indice !== -1) {
+    favoritos.value.splice(indice, 1);
+    guardarFavoritos();
+  }
+}
+
+// Métodos auxiliares
 function countIngredientes(receta) {
   const ingredientes = [
     receta.ingrediente1,
@@ -135,11 +158,9 @@ function getEstrellas(puntaje) {
   const estrellasLlenas = Math.round(puntaje);
   const totalEstrellas = 5;
   const estrellas = [];
-
   for (let i = 1; i <= totalEstrellas; i++) {
     estrellas.push(i <= estrellasLlenas ? "★" : "☆");
   }
-
   return estrellas.join("");
 }
 
@@ -188,6 +209,10 @@ function irADetalle(id) {
   color: gold;
 }
 
+.favorito-btn:hover {
+  color: #ff6b6b;
+}
+
 .buscador-wrapper {
   display: flex;
   justify-content: center;
@@ -200,5 +225,15 @@ function irADetalle(id) {
   font-size: 1.2rem;
   padding: 0.6rem 1rem;
   border-radius: 0.5rem;
+}
+
+.btn-success {
+  background-color: #4caf50;
+  border-color: #4caf50;
+}
+
+.btn-success:hover {
+  background-color: #45a049;
+  border-color: #45a049;
 }
 </style>
