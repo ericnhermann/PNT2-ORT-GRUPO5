@@ -4,6 +4,9 @@
       <h2>Mi Perfil</h2>
       <div class="perfil-info">
         <p><strong>Usuario:</strong> {{ user?.username }}</p>
+        <p v-if="user?.email"><strong>Email:</strong> {{ user.email }}</p>
+        <p v-if="user?.createdAt"><strong>Miembro desde:</strong> {{ formatDate(user.createdAt) }}</p>
+        <p><strong>Favoritos:</strong> {{ favoritosCount }}</p>
       </div>
       <button @click="handleLogout" class="logout-button">Cerrar Sesión</button>
     </div>
@@ -11,7 +14,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 
@@ -19,6 +22,35 @@ const router = useRouter()
 const authStore = useAuthStore()
 
 const user = computed(() => authStore.getUser)
+
+// Contador de favoritos desde localStorage
+const favoritosCount = ref(0)
+
+function cargarFavoritos() {
+  const favoritosGuardados = localStorage.getItem("favoritos")
+  if (favoritosGuardados) {
+    favoritosCount.value = JSON.parse(favoritosGuardados).length
+  } else {
+    favoritosCount.value = 0
+  }
+}
+
+onMounted(() => {
+  cargarFavoritos()
+  // Escuchar cambios en localStorage (por si se modifican en otra pestaña)
+  window.addEventListener('storage', cargarFavoritos)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('storage', cargarFavoritos)
+})
+
+// Formatear fecha
+function formatDate(dateString) {
+  if (!dateString) return ''
+  const options = { year: 'numeric', month: 'long', day: 'numeric' }
+  return new Date(dateString).toLocaleDateString('es-AR', options)
+}
 
 const handleLogout = () => {
   authStore.logout()
@@ -76,4 +108,4 @@ const handleLogout = () => {
 .logout-button:hover {
   background-color: #da190b;
 }
-</style> 
+</style>
