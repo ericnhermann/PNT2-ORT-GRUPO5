@@ -22,9 +22,11 @@ const router = useRouter()
         </div>
 
       <div class="feature-card">
-        <h3>Comparte</h3>
-        <p>Compartí tus propias recetas con la comunidad</p>
-      </div>
+    <router-link to="/CrearReceta" class="feature-card-link">
+    <h3>Comparte</h3>
+    <p>Compartí tus propias recetas con la comunidad</p>
+      </router-link>
+</div>
 
       <div class="feature-card">
         <h3>Guarda Favoritos</h3>

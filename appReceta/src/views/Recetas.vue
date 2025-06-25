@@ -1,5 +1,9 @@
 <template>
   <div class="container py-4">
+      <div class="acciones-superiores mb-4">
+        <button class="btn btn-outline-success" @click="irAMisRecetas">Mis Recetas</button>
+        <button class="btn btn-success" @click="irACrearReceta">Subir Receta</button>
+    </div>
     <!-- Buscador -->
     <div class="mb-4 buscador-wrapper">
       <input
@@ -146,6 +150,15 @@ function getEstrellas(puntaje) {
 function irADetalle(id) {
   router.push({ name: "RecetaDetalleView", params: { id: id.toString() } });
 }
+
+const irAMisRecetas = () => {
+  router.push('/MisRecetas');
+};
+
+const irACrearReceta = () => {
+  router.push('/CrearReceta');
+};
+
 </script>
 
 <style scoped>
@@ -201,4 +214,28 @@ function irADetalle(id) {
   padding: 0.6rem 1rem;
   border-radius: 0.5rem;
 }
+
+.acciones-superiores {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.acciones-superiores button {
+  background-color: #1e1e1e;
+  color: #fff;
+  border: 2px solid #00c97e;
+  padding: 0.5rem 1.2rem;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.acciones-superiores button:hover {
+  background-color: #00c97e;
+  color: #1e1e1e;
+}
+
 </style>

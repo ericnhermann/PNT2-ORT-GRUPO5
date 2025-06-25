@@ -9,9 +9,10 @@ const mensaje = ref('');
 
 const crear = async (receta) => {
   try {
-    await createReceta(receta);
+    await createReceta(receta); 
+
     mensaje.value = 'Receta guardada con éxito';
-    router.push('/MisRecetas');
+    router.push('/MisRecetas'); 
   } catch (e) {
     mensaje.value = 'Error al guardar receta';
   }
@@ -25,3 +26,4 @@ const crear = async (receta) => {
     <div v-if="mensaje" class="alert alert-info mt-3">{{ mensaje }}</div>
   </div>
 </template>
+

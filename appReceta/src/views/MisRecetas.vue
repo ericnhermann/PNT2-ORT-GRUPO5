@@ -1,35 +1,31 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 
-const recetas = ref([
-  {
-    id: 1,
-    nombre: 'Tarta de manzana',
-    imagen: 'https://www.recetasgratis.net/files/article/imagen-receta-de-tarta-de-manzana-939x640.jpg',
-    categoria: 'Postre',
-    ingredientes: ['manzana', 'azúcar', 'harina'],
-    instrucciones: 'Cortar las manzanas, preparar la masa...'
-  },
-  {
-    id: 2,
-    nombre: 'Pizza casera',
-    imagen: 'https://www.recetasgratis.net/files/article/pizza-casera-vegetariana-918x450.jpg',
-    categoria: 'Cena',
-    ingredientes: ['harina', 'levadura', 'queso'],
-    instrucciones: 'Amasar, hornear y disfrutar.'
-  }
-]);
+
+const recetas = ref([]);
+
+onMounted(() => {
+  const guardadas = JSON.parse(localStorage.getItem('recetas')) || [];
+  recetas.value = guardadas;
+});
+
 
 
 const eliminarReceta = (id) => {
   recetas.value = recetas.value.filter(r => r.id !== id);
+  localStorage.setItem('recetas', JSON.stringify(recetas.value));
 };
+
+
+
+
+
 </script>
 
 <template>
   <div class="contenedor-recetas">
     <h1 class="titulo">Mis Recetas</h1>
-
+  
     <div v-if="recetas.length === 0" class="mensaje-vacio">
       No hay recetas guardadas aún.
     </div>
@@ -130,4 +126,6 @@ const eliminarReceta = (id) => {
   font-size: 1.2rem;
   opacity: 0.7;
 }
+
+
 </style>
