@@ -16,12 +16,14 @@ export const useAuthStore = defineStore('auth', {
     async login(username, password) {
       const user = await loginUser(username, password)
       if (user) {
-        this.user = { username: user.name, id: user.id }
-        this.isAuthenticated = true
-        localStorage.setItem('user', JSON.stringify(this.user))
-        return true
+        // Determinar el rol
+        let role = user.role || (user.name === 'admin' ? 'admin' : 'user');
+        this.user = { username: user.name, id: user.id, role };
+        this.isAuthenticated = true;
+        localStorage.setItem('user', JSON.stringify(this.user));
+        return true;
       }
-      return false
+      return false;
     },
     
     logout() {

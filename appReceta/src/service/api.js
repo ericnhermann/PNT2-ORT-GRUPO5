@@ -92,3 +92,21 @@ export const createUser = async (name, password) => {
     throw error;
   }
 };
+
+export const getUserById = async (id) => {
+  try {
+    const response = await axios.get(`${USERS_URL}/${id}`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateUserFavoritos = async (userId, favoritos) => {
+  try {
+    const response = await axios.put(`${USERS_URL}/${userId}`, { favoritos });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};

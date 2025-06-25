@@ -1,79 +1,64 @@
 <template>
   <div class="container py-4">
-    <h2 class="text-center mb-4">Mis Recetas Favoritas</h2>
-    
-    <!-- Buscador - Solo se muestra si hay favoritos -->
-    <div class="mb-4 buscador-wrapper" v-if="recetasFavoritas.length > 0">
-      <input
-        type="text"
-        v-model="busqueda"
-        placeholder="Buscar en favoritos..."
-        class="form-control buscador"
-      />
+    <div class="favoritos-header">
+      <h2>Mis Recetas Favoritas</h2>
+      <div v-if="recetasFavoritas.length" class="buscador-wrapper">
+        <input
+          v-model="busqueda"
+          type="text"
+          placeholder="Buscar en favoritos..."
+          class="form-control buscador"
+        />
+      </div>
     </div>
 
-    <!-- Lista de recetas favoritas -->
-    <div class="row" v-if="favoritosFiltrados.length > 0">
+    <div v-if="favoritosFiltrados.length" class="recetas-grid">
       <div
         v-for="receta in favoritosFiltrados"
         :key="receta.id"
-        class="col-12 col-sm-6 col-md-4 mb-4"
+        class="recetas-card"
+        @click="irADetalle(receta.id)"
       >
-        <div
-          class="card border border-light border-2 position-relative"
-          style="cursor: pointer"
-          @click="irADetalle(receta.id)"
-        >
-          <!-- Estrella de favorito - siempre activa en esta vista -->
-          <button
-            class="favorito-btn activa"
-            @click.stop="eliminarDeFavoritos(receta.id)"
-            title="Quitar de favoritos"
-          >
-            ★
-          </button>
+        <button
+          class="favorito-btn activa"
+          @click.stop="eliminarDeFavoritos(receta.id)"
+          aria-label="Quitar de favoritos"
+        >★</button>
 
-          <img
-            v-if="receta.enlaceImagen"
-            :src="receta.enlaceImagen"
-            class="card-img-top"
-            alt="Imagen receta"
-            style="height: 220px; object-fit: cover"
-          />
-          <div class="card-body">
-            <h3 class="card-title text-truncate text-decoration-underline">
-              {{ receta.nombreReceta }}
-            </h3>
+        <img
+          v-if="receta.enlaceImagen"
+          :src="receta.enlaceImagen"
+          alt="Imagen receta"
+          class="receta-img"
+        />
 
-            <p class="card-text mb-1">
-              <strong>Categoría:</strong> {{ receta.Categoria }}
-            </p>
-            <p class="card-text mb-1">
-              <strong>Puntaje:</strong> {{ getEstrellas(receta.puntajeReceta) }}
-            </p>
-            <p class="card-text mb-0">
-              <strong>Ingredientes:</strong> {{ countIngredientes(receta) }}
-            </p>
-          </div>
+        <div class="receta-body">
+          <h3 class="receta-titulo">{{ receta.nombreReceta }}</h3>
+          <p class="receta-texto">
+            <strong>Categoría:</strong>
+            {{ receta.categoria || "Sin categoría" }}
+          </p>
+          <p class="receta-texto">
+            <strong>Puntaje:</strong> {{ getEstrellas(receta.puntajeReceta) }}
+          </p>
+          <p class="receta-texto">
+            <strong>Ingredientes:</strong> {{ countIngredientes(receta) }}
+          </p>
         </div>
       </div>
     </div>
 
-    <!-- Mensaje cuando no hay favoritos -->
-    <div v-else-if="recetasFavoritas.length === 0" class="text-center py-5">
-      <div class="mb-4">
-        <i class="fas fa-heart" style="font-size: 4rem; color: #ccc;"></i>
-      </div>
+    <div v-else-if="!recetasFavoritas.length" class="text-center py-5">
+      <i class="fas fa-heart mb-3" style="font-size:4rem;color:#ccc"></i>
       <h4 class="text-muted mb-3">No tienes recetas favoritas</h4>
       <p class="text-muted mb-4">
-        Explora nuestras recetas y marca las que más te gusten con la estrella ★
+        Explora nuestras recetas y márcalas con la estrella ★
       </p>
       <router-link to="/recetas" class="btn btn-success btn-lg">
         Ver Recetas
       </router-link>
     </div>
 
-    <!-- Mensaje cuando no hay resultados de búsqueda -->
     <div v-else class="text-center py-3">
       <p class="text-muted">
         No se encontraron recetas favoritas que coincidan con tu búsqueda.
@@ -83,85 +68,60 @@
 </template>
 
 <script setup>
-// FavoritosView.vue
-import { ref, computed, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
-import { getAllRecetas } from "../service/api";
+import { getAllRecetas, updateUserFavoritos } from "../service/api";
+import { useAuthStore } from "../stores/auth";
 
 const router = useRouter();
-const recetas = ref([]); // Todas las recetas
-const favoritos = ref([]); // IDs de recetas favoritas
+const recetas = ref([]);
+const favoritos = ref([]);
 const busqueda = ref("");
+const authStore = useAuthStore();
 
-// Cargar recetas y favoritos al montar el componente
 onMounted(async () => {
-  try {
-    const data = await getAllRecetas();
-    recetas.value = data;
-    cargarFavoritos();
-  } catch (error) {
-    console.error("Error al obtener recetas:", error);
-  }
+  recetas.value = await getAllRecetas();
+  favoritos.value = Array.isArray(authStore.user?.favoritos)
+    ? [...authStore.user.favoritos]
+    : [];
 });
 
-// Cargar favoritos desde localStorage
-function cargarFavoritos() {
-  const favoritosGuardados = localStorage.getItem("favoritos");
-  if (favoritosGuardados) {
-    favoritos.value = JSON.parse(favoritosGuardados);
-  } else {
-    favoritos.value = [];
-  }
-}
+const recetasFavoritas = computed(() =>
+  recetas.value.filter(r => favoritos.value.includes(r.id))
+);
 
-// Guardar favoritos en localStorage
-function guardarFavoritos() {
-  localStorage.setItem("favoritos", JSON.stringify(favoritos.value));
-}
-
-// Computed: recetas que están en favoritos
-const recetasFavoritas = computed(() => {
-  return recetas.value.filter(receta => favoritos.value.includes(receta.id));
-});
-
-// Computed: filtrar favoritos según búsqueda
 const favoritosFiltrados = computed(() => {
-  const texto = busqueda.value.toLowerCase().trim();
-  if (!texto) return recetasFavoritas.value;
-  return recetasFavoritas.value.filter((receta) =>
-    receta.nombreReceta?.toLowerCase().includes(texto)
-  );
+  const t = busqueda.value.toLowerCase().trim();
+  return t
+    ? recetasFavoritas.value.filter(r =>
+        r.nombreReceta.toLowerCase().includes(t)
+      )
+    : recetasFavoritas.value;
 });
 
-// Eliminar receta de favoritos
-function eliminarDeFavoritos(recetaId) {
-  const indice = favoritos.value.indexOf(recetaId);
-  if (indice !== -1) {
-    favoritos.value.splice(indice, 1);
-    guardarFavoritos();
+async function eliminarDeFavoritos(id) {
+  const idx = favoritos.value.indexOf(id);
+  if (idx !== -1) {
+    favoritos.value.splice(idx, 1);
+    await updateUserFavoritos(authStore.user.id, favoritos.value);
+    authStore.user.favoritos = [...favoritos.value];
+    localStorage.setItem("user", JSON.stringify(authStore.user));
   }
 }
 
-// Métodos auxiliares
-function countIngredientes(receta) {
-  const ingredientes = [
-    receta.ingrediente1,
-    receta.ingrediente2,
-    receta.ingrediente3,
-    receta.ingrediente4,
-    receta.ingrediente5,
-  ];
-  return ingredientes.filter((i) => i && i.trim() !== "").length;
+function countIngredientes(r) {
+  return [
+    r.ingrediente1,
+    r.ingrediente2,
+    r.ingrediente3,
+    r.ingrediente4,
+    r.ingrediente5,
+  ].filter(i => i && i.trim()).length;
 }
 
-function getEstrellas(puntaje) {
-  const estrellasLlenas = Math.round(puntaje);
-  const totalEstrellas = 5;
-  const estrellas = [];
-  for (let i = 1; i <= totalEstrellas; i++) {
-    estrellas.push(i <= estrellasLlenas ? "★" : "☆");
-  }
-  return estrellas.join("");
+function getEstrellas(score) {
+  const llenas = Math.round(score);
+  return Array.from({ length: 5 }, (_, i) => (i < llenas ? "★" : "☆")).join("");
 }
 
 function irADetalle(id) {
@@ -170,68 +130,129 @@ function irADetalle(id) {
 </script>
 
 <style scoped>
-.row {
+.favoritos-header {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 2rem;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
 }
-
-.card {
-  margin: 10px;
-  border: 2px solid white !important;
-  border-radius: 0 !important;
-  position: relative;
-}
-
-.favorito-btn {
-  position: absolute;
-  top: 8px;
-  left: 8px;
-  background: transparent;
-  border: none;
-  font-size: 24px;
-  color: #ccc;
-  cursor: pointer;
-  z-index: 1;
-  transition: color 0.3s;
-  padding: 0;
-  line-height: 1;
-  outline: none;
-}
-
-.favorito-btn:focus {
-  outline: none;
-  box-shadow: none;
-}
-
-.favorito-btn.activa {
-  color: gold;
-}
-
-.favorito-btn:hover {
-  color: #ff6b6b;
+.favoritos-header h2 {
+  margin: 0;
+  font-size: 1.75rem;
+  color: #fff;
 }
 
 .buscador-wrapper {
   display: flex;
   justify-content: center;
-  align-items: center;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;  
+}
+.buscador {
+  width: 100%;
+  max-width: 500px;
+  padding: 0.6rem 1rem;
+  font-size: 1.1rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
 }
 
-.buscador {
-  max-width: 500px;
+.recetas-grid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(1, 1fr);
+}
+@media (min-width: 576px) {
+  .recetas-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (min-width: 768px) {
+  .recetas-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+@media (min-width: 1024px) {
+  .recetas-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.recetas-card {
+  background: #fff;
+  border: 2px solid #eee;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+}
+.recetas-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+
+.receta-img {
   width: 100%;
-  font-size: 1.2rem;
-  padding: 0.6rem 1rem;
-  border-radius: 0.5rem;
+  height: 220px;
+  object-fit: cover;
+}
+
+.receta-body {
+  padding: 1rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.receta-titulo {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #222;
+}
+.receta-texto {
+  color: #444;
+  margin-bottom: 0.4rem;
+  line-height: 1.3;
+}
+.receta-texto:last-child {
+  margin-bottom: 0;
+}
+
+.favorito-btn {
+  position: absolute;
+  top: 6px;
+  right: 10px;
+  width: 38px;
+  height: 38px;
+  background: rgba(0,0,0,0.6);
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  line-height: 1;
+  color: #fff;
+  transition: background 0.2s, color 0.2s;
+}
+.favorito-btn:hover {
+  background: rgba(0,0,0,0.8);
+}
+.favorito-btn.activa {
+  color: gold;
 }
 
 .btn-success {
   background-color: #4caf50;
   border-color: #4caf50;
 }
-
 .btn-success:hover {
   background-color: #45a049;
   border-color: #45a049;

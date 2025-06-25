@@ -6,6 +6,7 @@ import { useAuthStore } from "../stores/auth";
 import RecetaDetalleView from "../views/RecetaDetalleView.vue";
 import RegisterView from "../views/RegisterView.vue";
 import FavoritosView from '../views/FavoritosView.vue';
+import AdminView from '../views/AdminView.vue';
 
  
 const routes = [
@@ -58,6 +59,12 @@ const routes = [
   name: 'FavoritosView',
   component: FavoritosView
 },
+  {
+    path: '/admin',
+    name: 'Admin',
+    component: AdminView,
+    meta: { requiresAdmin: true }
+  },
 ];
 
 const router = createRouter({
@@ -70,6 +77,12 @@ router.beforeEach((to, from, next) => {
 
   if (to.meta.requiresAuth && !authStore.isLoggedIn) {
     next("/login");
+  } else if (to.meta.requiresAdmin) {
+    if (authStore.user && authStore.user.role === 'admin') {
+      next();
+    } else {
+      next('/');
+    }
   } else {
     next();
   }

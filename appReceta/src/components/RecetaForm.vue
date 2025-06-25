@@ -1,8 +1,6 @@
 <script setup>
 import { ref, watch } from 'vue';
 
-const emit = defineEmits(['submit']);
-
 const props = defineProps({
   receta: {
     type: Object,
