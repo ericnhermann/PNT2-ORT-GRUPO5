@@ -1,6 +1,8 @@
 <script setup>
 import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router'; // 👈 importá esto
 
+const router = useRouter(); // 👈 instancia del router
 
 const recetas = ref([]);
 
@@ -9,18 +11,17 @@ onMounted(() => {
   recetas.value = guardadas;
 });
 
-
-
 const eliminarReceta = (id) => {
   recetas.value = recetas.value.filter(r => r.id !== id);
   localStorage.setItem('recetas', JSON.stringify(recetas.value));
 };
 
-
-
-
-
+// 👇 FUNCIONALIDAD: redirigir al detalle
+const verDetalle = (id) => {
+  router.push(`/receta/${id}`); // esto te lleva a /receta/123 por ejemplo
+};
 </script>
+
 
 <template>
   <div class="contenedor-recetas">
@@ -40,7 +41,7 @@ const eliminarReceta = (id) => {
           <p><strong>Ingredientes:</strong> {{ receta.ingredientes.join(', ') }}</p>
 
           <div class="acciones">
-            <button class="btn-detalle">Ver</button>
+            <button class="btn-detalle" @click="verDetalle(receta.id)">Ver</button>
             <button class="btn-eliminar" @click="eliminarReceta(receta.id)">Eliminar</button>
           </div>
         </div>

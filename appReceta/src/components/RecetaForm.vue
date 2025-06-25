@@ -1,5 +1,7 @@
 <script setup>
-import { ref, watch, defineEmits, defineProps } from 'vue';
+import { ref, watch } from 'vue';
+
+const emit = defineEmits(['submit']);
 
 const props = defineProps({
   receta: {
@@ -13,8 +15,6 @@ const props = defineProps({
     })
   }
 });
-
-const emit = defineEmits(['submit']);
 
 const nombre = ref(props.receta.nombre);
 const imagen = ref(props.receta.imagen);
@@ -30,6 +30,16 @@ watch(() => props.receta, (nueva) => {
   instrucciones.value = nueva.instrucciones;
 }, { immediate: true });
 
+const manejarArchivo = (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    imagen.value = ev.target.result; 
+  };
+  reader.readAsDataURL(file);
+};
+
 const enviar = () => {
   const recetaFinal = {
     nombre: nombre.value,
@@ -41,13 +51,7 @@ const enviar = () => {
       .filter(i => i.length > 0),
     instrucciones: instrucciones.value
   };
-
   emit('submit', recetaFinal);
-  const recetasGuardadas = JSON.parse(localStorage.getItem('recetas')) || [];
-  recetaFinal.id = Date.now(); 
-  recetasGuardadas.push(recetaFinal);
-  localStorage.setItem('recetas', JSON.stringify(recetasGuardadas));
-   router.push('/MisRecetas'); 
 };
 </script>
 
@@ -63,34 +67,35 @@ const enviar = () => {
       <input v-model="categoria" type="text" class="form-control" required />
     </div>
 
-<div class="mb-3">
-  <label class="form-label text-light">Imagen</label>
-  <input 
-    v-model="imagen" 
-    type="url" 
-    class="form-control mb-2" 
-    placeholder="URL de la imagen" 
-  />
-  
+    <div class="mb-3">
+      <label class="form-label text-light">Imagen</label>
+      <input 
+        v-model="imagen" 
+        type="url" 
+        class="form-control mb-2" 
+        placeholder="URL de la imagen" 
+      />
+      <input 
+        type="file" 
+        accept="image/*" 
+        class="form-control" 
+        @change="manejarArchivo" 
+      />
+      <div v-if="imagen" class="mt-2">
+        <img :src="imagen" alt="Vista previa" />
+      </div>
+    </div>
 
-  <input 
-    type="file" 
-    accept="image/*" 
-    class="form-control" 
-    @change="manejarArchivo" 
-  />
-</div>
-
-<div class="mb-3">
-  <label class="form-label text-light">Ingredientes</label>
-  <input 
-    v-model="ingredientesTexto" 
-    type="text" 
-    class="form-control" 
-    placeholder="Ej: huevo, leche, azúcar" 
-    required
-  />
-</div>
+    <div class="mb-3">
+      <label class="form-label text-light">Ingredientes</label>
+      <input 
+        v-model="ingredientesTexto" 
+        type="text" 
+        class="form-control" 
+        placeholder="Ej: huevo, leche, azúcar" 
+        required
+      />
+    </div>
 
     <div class="mb-3">
       <label class="form-label text-light">Instrucciones</label>
