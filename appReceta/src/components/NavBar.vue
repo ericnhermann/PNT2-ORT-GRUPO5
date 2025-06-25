@@ -5,17 +5,18 @@
     <div class="navbar-menu">
       <router-link to="/" class="navbar-item">Inicio</router-link>
       <router-link to="/recetas" class="navbar-item">Recetas</router-link>
+      <router-link to="/favoritos" class="navbar-item">Favoritos</router-link>
       <router-link to="/acerca" class="navbar-item">Acerca De</router-link>
     </div>
 
     <div class="navbar-right">
       <div v-if="!isLoggedIn" class="navbar-auth">
-        <router-link to="/login" class="auth-button"
-          >Iniciar Sesión</router-link
-        >
+        <router-link to="/login" class="auth-button">Iniciar Sesión</router-link>
+        <router-link to="/register" class="auth-button">Crear Cuenta</router-link>
       </div>
-      <div v-else class="navbar-auth">
+      <div v-else class="navbar-auth" style="display: flex; gap: 0.5rem; align-items: center;">
         <router-link to="/perfil" class="auth-button">Mi Perfil</router-link>
+        <button class="auth-button logout-button" @click="logout">Cerrar sesión</button>
       </div>
     </div>
   </nav>
@@ -24,14 +25,21 @@
 <script setup>
 import { ref, computed } from "vue";
 import { useAuthStore } from "../stores/auth";
+import { useRouter } from 'vue-router'
 
 const busqueda = ref("");
 const authStore = useAuthStore();
+const router = useRouter();
 
 const isLoggedIn = computed(() => authStore.isLoggedIn);
+const user = computed(() => authStore.getUser);
+
+const logout = () => {
+  authStore.logout();
+  router.push("/");
+};
 
 const buscar = () => {
-  // Implementar lógica de búsqueda
   console.log("Buscando:", busqueda.value);
 };
 </script>
@@ -133,10 +141,24 @@ const buscar = () => {
   text-decoration: none;
   cursor: pointer;
   transition: background-color 0.3s, color 0.3s;
+  min-width: 110px;
+  text-align: center;
 }
 
 .auth-button:hover {
   background-color: white;
   color: #4caf50;
+}
+
+.logout-button {
+  background-color: #e57373;
+  border-color: #e57373;
+  color: white;
+}
+
+.logout-button:hover {
+  background-color: #c62828;
+  color: white;
+  border-color: #c62828;
 }
 </style>

@@ -62,3 +62,33 @@ export const deleteReceta = async (id) => {
     throw error;
   }
 };
+
+// --- USUARIOS ---
+const USERS_URL = "https://68599eeb9f6ef9611153b9b7.mockapi.io/apiRecetas/usuarios/users";
+
+export const getAllUsers = async () => {
+  try {
+    const response = await axios.get(USERS_URL);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const loginUser = async (username, password) => {
+  try {
+    const users = await getAllUsers();
+    return users.find(u => u.name === username && u.password === password) || null;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const createUser = async (name, password) => {
+  try {
+    const response = await axios.post(USERS_URL, { name, password });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
