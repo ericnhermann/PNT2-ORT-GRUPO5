@@ -64,12 +64,14 @@
 <script setup>
 import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
-import { getAllRecetas } from "../service/api";
+import { getAllRecetas, updateUserFavoritos } from "../service/api";
+import { useAuthStore } from '../stores/auth';
 
 const router = useRouter();
 const recetas = ref([]);
 const favoritos = ref([]);      
 const busqueda = ref("");
+const authStore = useAuthStore();
 
 onMounted(async () => {
   try {
@@ -87,16 +89,23 @@ onMounted(async () => {
 });
 
 function cargarFavoritos() {
-  const favoritasGuardadas = localStorage.getItem("favoritos");
-  favoritos.value = favoritasGuardadas ? JSON.parse(favoritasGuardadas) : [];
+  if (authStore.user && Array.isArray(authStore.user.favoritos)) {
+    favoritos.value = [...authStore.user.favoritos];
+  } else {
+    favoritos.value = [];
+  }
 }
 
-// Guardar en localStorage
-function guardarFavoritos() {
-  localStorage.setItem("favoritos", JSON.stringify(favoritos.value));
+async function guardarFavoritos() {
+  if (authStore.user) {
+    await updateUserFavoritos(authStore.user.id, favoritos.value);
+    // Actualizar en el store también
+    authStore.user.favoritos = [...favoritos.value];
+    localStorage.setItem('user', JSON.stringify(authStore.user));
+  }
 }
 
-function toggleFavorita(receta) {
+async function toggleFavorita(receta) {
   receta.favorita = !receta.favorita;
   const idx = favoritos.value.indexOf(receta.id);
   if (receta.favorita && idx === -1) {
@@ -104,7 +113,7 @@ function toggleFavorita(receta) {
   } else if (!receta.favorita && idx !== -1) {
     favoritos.value.splice(idx, 1);
   }
-  guardarFavoritos();
+  await guardarFavoritos();
 }
 
 const recetasFiltradas = computed(() => {

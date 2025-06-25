@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch, defineEmits, defineProps } from 'vue';
+import { ref, watch } from 'vue';
 
 const props = defineProps({
   receta: {
@@ -13,8 +13,6 @@ const props = defineProps({
     })
   }
 });
-
-const emit = defineEmits(['submit']);
 
 const nombre = ref(props.receta.nombre);
 const imagen = ref(props.receta.imagen);
@@ -42,7 +40,6 @@ const enviar = () => {
     instrucciones: instrucciones.value
   };
 
-  emit('submit', recetaFinal);
   const recetasGuardadas = JSON.parse(localStorage.getItem('recetas')) || [];
   recetaFinal.id = Date.now(); 
   recetasGuardadas.push(recetaFinal);

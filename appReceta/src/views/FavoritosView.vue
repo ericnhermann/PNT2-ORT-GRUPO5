@@ -86,12 +86,14 @@
 // FavoritosView.vue
 import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import { getAllRecetas } from "../service/api";
+import { getAllRecetas, updateUserFavoritos } from "../service/api";
+import { useAuthStore } from '../stores/auth';
 
 const router = useRouter();
 const recetas = ref([]); // Todas las recetas
 const favoritos = ref([]); // IDs de recetas favoritas
 const busqueda = ref("");
+const authStore = useAuthStore();
 
 // Cargar recetas y favoritos al montar el componente
 onMounted(async () => {
@@ -106,17 +108,21 @@ onMounted(async () => {
 
 // Cargar favoritos desde localStorage
 function cargarFavoritos() {
-  const favoritosGuardados = localStorage.getItem("favoritos");
-  if (favoritosGuardados) {
-    favoritos.value = JSON.parse(favoritosGuardados);
+  if (authStore.user && Array.isArray(authStore.user.favoritos)) {
+    favoritos.value = [...authStore.user.favoritos];
   } else {
     favoritos.value = [];
   }
 }
 
 // Guardar favoritos en localStorage
-function guardarFavoritos() {
-  localStorage.setItem("favoritos", JSON.stringify(favoritos.value));
+async function guardarFavoritos() {
+  if (authStore.user) {
+    await updateUserFavoritos(authStore.user.id, favoritos.value);
+    // Actualizar en el store también
+    authStore.user.favoritos = [...favoritos.value];
+    localStorage.setItem('user', JSON.stringify(authStore.user));
+  }
 }
 
 // Computed: recetas que están en favoritos
@@ -134,11 +140,11 @@ const favoritosFiltrados = computed(() => {
 });
 
 // Eliminar receta de favoritos
-function eliminarDeFavoritos(recetaId) {
+async function eliminarDeFavoritos(recetaId) {
   const indice = favoritos.value.indexOf(recetaId);
   if (indice !== -1) {
     favoritos.value.splice(indice, 1);
-    guardarFavoritos();
+    await guardarFavoritos();
   }
 }
 
