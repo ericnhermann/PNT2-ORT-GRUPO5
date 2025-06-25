@@ -87,8 +87,8 @@ onMounted(async () => {
 });
 
 function cargarFavoritos() {
-  const salvos = localStorage.getItem("favoritos");
-  favoritos.value = salvos ? JSON.parse(salvos) : [];
+  const favoritasGuardadas = localStorage.getItem("favoritos");
+  favoritos.value = favoritasGuardadas ? JSON.parse(favoritasGuardadas) : [];
 }
 
 // Guardar en localStorage
