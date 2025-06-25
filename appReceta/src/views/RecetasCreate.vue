@@ -7,14 +7,29 @@ import { ref } from 'vue';
 const router = useRouter();
 const mensaje = ref('');
 
+function guardarEnLocalStorage(receta) {
+
+  if (!receta.id) {
+    receta.id = Date.now().toString();
+  }
+  const recetasGuardadas = JSON.parse(localStorage.getItem('recetas')) || [];
+  recetasGuardadas.push(receta);
+  localStorage.setItem('recetas', JSON.stringify(recetasGuardadas));
+}
+
 const crear = async (receta) => {
   try {
-    await createReceta(receta); 
-
+  
+    await createReceta(receta);
+   
+    guardarEnLocalStorage(receta);
     mensaje.value = 'Receta guardada con éxito';
-    router.push('/MisRecetas'); 
+    router.push('/MisRecetas');
   } catch (e) {
-    mensaje.value = 'Error al guardar receta';
+
+    guardarEnLocalStorage(receta);
+    mensaje.value = 'Receta guardada localmente';
+    router.push('/MisRecetas');
   }
 };
 </script>
@@ -26,4 +41,3 @@ const crear = async (receta) => {
     <div v-if="mensaje" class="alert alert-info mt-3">{{ mensaje }}</div>
   </div>
 </template>
-
