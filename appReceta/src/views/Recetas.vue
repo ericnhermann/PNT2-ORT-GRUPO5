@@ -1,10 +1,14 @@
 <template>
   <div class="container py-4">
-      <div class="acciones-superiores mb-4">
-        <button class="btn btn-outline-success" @click="irAMisRecetas">Mis Recetas</button>
-        <button class="btn btn-success" @click="irACrearReceta">Subir Receta</button>
+    <div class="acciones-superiores mb-4">
+      <button class="btn btn-outline-success" @click="irAMisRecetas">
+        Mis Recetas
+      </button>
+      <button class="btn btn-success" @click="irACrearReceta">
+        Subir Receta
+      </button>
     </div>
-    <!-- Buscador -->
+
     <div class="mb-4 buscador-wrapper">
       <input
         v-model="busqueda"
@@ -37,9 +41,16 @@
 
         <div class="receta-body">
           <h3 class="receta-titulo">{{ receta.nombreReceta }}</h3>
-          <p class="receta-texto"><strong>Categoría:</strong> {{ receta.categoria || 'Sin categoría' }}</p>
-          <p class="receta-texto"><strong>Puntaje:</strong> {{ getEstrellas(receta.puntajeReceta) }}</p>
-          <p class="receta-texto"><strong>Ingredientes:</strong> {{ countIngredientes(receta) }}</p>
+          <p class="receta-texto">
+            <strong>Categoría:</strong>
+            {{ receta.categoria || "Sin categoría" }}
+          </p>
+          <p class="receta-texto">
+            <strong>Puntaje:</strong> {{ getEstrellas(receta.puntajeReceta) }}
+          </p>
+          <p class="receta-texto">
+            <strong>Ingredientes:</strong> {{ countIngredientes(receta) }}
+          </p>
         </div>
       </div>
     </div>
@@ -51,89 +62,102 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
-import { useRouter } from 'vue-router'
-import { getAllRecetas } from '../service/api'
+import { ref, onMounted, computed } from "vue";
+import { useRouter } from "vue-router";
+import { getAllRecetas } from "../service/api";
 
-const router = useRouter()
-const recetas = ref([])
-const busqueda = ref('')
+const router = useRouter();
+const recetas = ref([]);
+const favoritos = ref([]);      
+const busqueda = ref("");
 
 onMounted(async () => {
   try {
-    const data = await getAllRecetas()
-    recetas.value = data.map(r => ({ ...r, favorita: false }))
-  } catch {
-    console.error('Error al cargar recetas')
+    const data = await getAllRecetas();
+    recetas.value = data.map((r) => ({ ...r, favorita: false }));
+    cargarFavoritos();
+    recetas.value.forEach((r) => {
+      if (favoritos.value.includes(r.id)) {
+        r.favorita = true;
+      }
+    });
+  } catch (e) {
+    console.error("Error al cargar recetas:", e);
   }
-})
+});
 
 function cargarFavoritos() {
-  const favoritosGuardados = localStorage.getItem("favoritos");
-  if (favoritosGuardados) {
-    favoritos.value = JSON.parse(favoritosGuardados);
-  } else {
-    favoritos.value = [];
-  }
+  const salvos = localStorage.getItem("favoritos");
+  favoritos.value = salvos ? JSON.parse(salvos) : [];
 }
 
+// Guardar en localStorage
 function guardarFavoritos() {
   localStorage.setItem("favoritos", JSON.stringify(favoritos.value));
 }
 
-function esFavorita(recetaId) {
-  return favoritos.value.includes(recetaId);
-}
-
 function toggleFavorita(receta) {
-  const indice = favoritos.value.indexOf(receta.id);
-  
-  if (indice === -1) {
+  receta.favorita = !receta.favorita;
+  const idx = favoritos.value.indexOf(receta.id);
+  if (receta.favorita && idx === -1) {
     favoritos.value.push(receta.id);
-  } else {
-    favoritos.value.splice(indice, 1);
+  } else if (!receta.favorita && idx !== -1) {
+    favoritos.value.splice(idx, 1);
   }
-  
-  // Guardar cambios en localStorage
   guardarFavoritos();
 }
 
 const recetasFiltradas = computed(() => {
-  const t = busqueda.value.toLowerCase().trim()
-  return recetas.value.filter(r =>
+  const t = busqueda.value.toLowerCase().trim();
+  return recetas.value.filter((r) =>
     r.nombreReceta?.toLowerCase().includes(t)
-  )
-})
+  );
+});
 
 function countIngredientes(r) {
-  return [r.ingrediente1, r.ingrediente2, r.ingrediente3, r.ingrediente4, r.ingrediente5]
-    .filter(i => i && i.trim()).length
+  return [
+    r.ingrediente1,
+    r.ingrediente2,
+    r.ingrediente3,
+    r.ingrediente4,
+    r.ingrediente5,
+  ].filter((i) => i && i.trim()).length;
 }
 
 function getEstrellas(score) {
-  const llenas = Math.round(score)
-  return Array.from({ length: 5 }, (_, i) => i < llenas ? '★' : '☆').join('')
-}
-
-function toggleFavorita(r) {
-  r.favorita = !r.favorita
+  const llenas = Math.round(score);
+  return Array.from({ length: 5 }, (_, i) => (i < llenas ? "★" : "☆")).join("");
 }
 
 function irADetalle(id) {
-  router.push({ name: 'RecetaDetalleView', params: { id: id.toString() } })
+  router.push({ name: "RecetaDetalleView", params: { id: id.toString() } });
 }
-
-const irAMisRecetas = () => {
-  router.push('/MisRecetas');
-};
-
-const irACrearReceta = () => {
-  router.push('/CrearReceta');
-};
-
+const irAMisRecetas = () => router.push("/MisRecetas");
+const irACrearReceta = () => router.push("/CrearReceta");
 </script>
 
 <style scoped>
+.acciones-superiores {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+.acciones-superiores button {
+  background: #1e1e1e;
+  color: #fff;
+  border: 2px solid #00c97e;
+  padding: 0.5rem 1.2rem;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.acciones-superiores button:hover {
+  background: #00c97e;
+  color: #1e1e1e;
+}
+
 .buscador-wrapper {
   display: flex;
   justify-content: center;
@@ -175,7 +199,7 @@ const irACrearReceta = () => {
   border-radius: 12px;
   overflow: hidden;
   position: relative;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s, box-shadow 0.3s;
   display: flex;
   flex-direction: column;
@@ -183,7 +207,7 @@ const irACrearReceta = () => {
 }
 .recetas-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 }
 
 .receta-img {
@@ -216,62 +240,25 @@ const irACrearReceta = () => {
 
 .favorito-btn {
   position: absolute;
-  top: 6px; right: 10px;
-  width: 38px; height: 38px;
-  background: rgba(0,0,0,0.6);
+  top: 6px;
+  right: 10px;
+  width: 38px;
+  height: 38px;
+  background: rgba(0, 0, 0, 0.6);
   border: none;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 26px;
-  line-height: 1; 
+  line-height: 1;
   color: #fff;
   transition: background 0.2s, color 0.2s;
 }
 .favorito-btn:hover {
-  background: rgba(0,0,0,0.8);
+  background: rgba(0, 0, 0, 0.8);
 }
 .favorito-btn.activa {
   color: gold;
 }
-
-.buscador-wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.buscador {
-  max-width: 500px;
-  width: 100%;
-  font-size: 1.2rem;
-  padding: 0.6rem 1rem;
-  border-radius: 0.5rem;
-}
-
-.acciones-superiores {
-  display: flex;
-  justify-content: flex-end;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-}
-
-.acciones-superiores button {
-  background-color: #1e1e1e;
-  color: #fff;
-  border: 2px solid #00c97e;
-  padding: 0.5rem 1.2rem;
-  border-radius: 8px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.acciones-superiores button:hover {
-  background-color: #00c97e;
-  color: #1e1e1e;
-}
-
 </style>
-
