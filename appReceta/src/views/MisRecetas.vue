@@ -2,9 +2,11 @@
 import { ref, onMounted } from 'vue';
 import { getAllRecetas } from '../service/api';
 import { useAuthStore } from '../stores/auth';
+import { useRouter } from 'vue-router';
 
 const recetas = ref([]);
 const authStore = useAuthStore();
+const router = useRouter();
 
 onMounted(async () => {
   const todas = await getAllRecetas();
@@ -14,6 +16,10 @@ onMounted(async () => {
 const eliminarReceta = (id) => {
   recetas.value = recetas.value.filter(r => r.id !== id);
 };
+
+function irADetalle(id) {
+  router.push({ name: 'RecetaDetalleView', params: { id: id.toString() } });
+}
 </script>
 
 <template>
@@ -34,7 +40,7 @@ const eliminarReceta = (id) => {
           <p><strong>Ingredientes:</strong> {{ receta.ingrediente1 }}, {{ receta.ingrediente2 }}, {{ receta.ingrediente3 }}, {{ receta.ingrediente4 }}, {{ receta.ingrediente5 }}</p>
 
           <div class="acciones">
-            <button class="btn-detalle">Ver</button>
+            <button class="btn-detalle" @click="irADetalle(receta.id)">Ver</button>
             <button class="btn-eliminar" @click="eliminarReceta(receta.id)">Eliminar</button>
           </div>
         </div>

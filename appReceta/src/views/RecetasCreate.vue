@@ -11,7 +11,6 @@ const authStore = useAuthStore();
 
 const crear = async (receta) => {
   try {
-    // Transformar ingredientes en ingrediente1, ingrediente2, etc.
     const recetaApi = {
       nombreReceta: receta.nombre,
       categoria: receta.categoria,
@@ -27,7 +26,6 @@ const crear = async (receta) => {
       userId: authStore.user.id
     };
     await createReceta(recetaApi); 
-
     mensaje.value = 'Receta guardada con éxito';
     router.push('/MisRecetas'); 
   } catch (e) {
