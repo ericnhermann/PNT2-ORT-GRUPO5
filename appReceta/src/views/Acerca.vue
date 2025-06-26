@@ -5,7 +5,13 @@
       Trabajo Práctico PNT2 · Realizado por: Hermann Eric Nicolás, Smith Matías Ezequiel, Sosa Gian Axel, Suckewer Tobías, Ventre Julieta (Grupo 5, ORT).
     </p>
     <p>
-      Usamos funciones async/await, Pinia, Chart.js, Vue Router y componentes reutilizables. Los datos se persisten en MockAPI y la app distingue roles de usuario.
+      Usamos funciones async/await, Pinia, Chart.js, Swiper.js, Vue Router y componentes reutilizables. Los datos se persisten en MockAPI y la app distingue roles de usuario.
+    </p>
+    <p>
+      <strong>Documentación:</strong> 
+      <a href="https://docs.google.com/document/d/17HBFJT2mE0qFlbE7Q6d12fTwsuS4wjGZfYS_afhW1YA/edit?tab=t.0" target="_blank">
+        Ver en Google Docs
+      </a>
     </p>
   </div>
 </template>
