@@ -7,6 +7,7 @@ import RecetaDetalleView from "../views/RecetaDetalleView.vue";
 import RegisterView from "../views/RegisterView.vue";
 import FavoritosView from '../views/FavoritosView.vue';
 import AdminView from '../views/AdminView.vue';
+import AcercaView from '../views/Acerca.vue';
 
  
 const routes = [
@@ -64,6 +65,11 @@ const routes = [
     name: 'Admin',
     component: AdminView,
     meta: { requiresAdmin: true }
+  },
+  {
+    path: '/acerca',
+    name: 'Acerca',
+    component: AcercaView
   },
 ];
 

@@ -37,6 +37,7 @@ const manejarArchivo = (e) => {
   };
   reader.readAsDataURL(file);
 };
+const emit = defineEmits(['submit']);
 
 const enviar = () => {
   const recetaFinal = {

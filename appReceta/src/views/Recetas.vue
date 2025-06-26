@@ -1,10 +1,10 @@
 <template>
   <div class="container py-4">
     <div class="acciones-superiores mb-4">
-      <button class="btn btn-outline-success" @click="irAMisRecetas">
+      <button v-if="authStore.isLoggedIn" class="btn btn-outline-success" @click="irAMisRecetas">
         Mis Recetas
       </button>
-      <button class="btn btn-success" @click="irACrearReceta">
+      <button v-if="authStore.isLoggedIn" class="btn btn-success" @click="irACrearReceta">
         Subir Receta
       </button>
     </div>
