@@ -89,7 +89,7 @@ const buscar = () => {
 .navbar-right {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 2rem;
 }
 
 .navbar-search {
@@ -144,6 +144,7 @@ const buscar = () => {
   transition: background-color 0.3s, color 0.3s;
   min-width: 110px;
   text-align: center;
+  margin-right: 5px;
 }
 
 .auth-button:hover {
