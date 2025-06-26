@@ -1,25 +1,19 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-
+import { getAllRecetas } from '../service/api';
+import { useAuthStore } from '../stores/auth';
 
 const recetas = ref([]);
+const authStore = useAuthStore();
 
-onMounted(() => {
-  const guardadas = JSON.parse(localStorage.getItem('recetas')) || [];
-  recetas.value = guardadas;
+onMounted(async () => {
+  const todas = await getAllRecetas();
+  recetas.value = todas.filter(r => r.userId == authStore.user?.id);
 });
-
-
 
 const eliminarReceta = (id) => {
   recetas.value = recetas.value.filter(r => r.id !== id);
-  localStorage.setItem('recetas', JSON.stringify(recetas.value));
 };
-
-
-
-
-
 </script>
 
 <template>
@@ -32,12 +26,12 @@ const eliminarReceta = (id) => {
 
     <div v-else class="grid-recetas">
       <div v-for="receta in recetas" :key="receta.id" class="card-receta">
-        <img :src="receta.imagen" alt="Imagen receta" class="img-receta" />
+        <img :src="receta.enlaceImagen" alt="Imagen receta" class="img-receta" />
 
         <div class="contenido">
-          <h3>{{ receta.nombre }}</h3>
+          <h3>{{ receta.nombreReceta }}</h3>
           <p><strong>Categoría:</strong> {{ receta.categoria }}</p>
-          <p><strong>Ingredientes:</strong> {{ receta.ingredientes.join(', ') }}</p>
+          <p><strong>Ingredientes:</strong> {{ receta.ingrediente1 }}, {{ receta.ingrediente2 }}, {{ receta.ingrediente3 }}, {{ receta.ingrediente4 }}, {{ receta.ingrediente5 }}</p>
 
           <div class="acciones">
             <button class="btn-detalle">Ver</button>

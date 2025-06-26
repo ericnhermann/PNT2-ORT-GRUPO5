@@ -41,12 +41,7 @@ const enviar = () => {
       .filter(i => i.length > 0),
     instrucciones: instrucciones.value
   };
-
-  const recetasGuardadas = JSON.parse(localStorage.getItem('recetas')) || [];
-  recetaFinal.id = Date.now(); 
-  recetasGuardadas.push(recetaFinal);
-  localStorage.setItem('recetas', JSON.stringify(recetasGuardadas));
-   router.push('/MisRecetas'); 
+  emit('submit', recetaFinal);
 };
 </script>
 
