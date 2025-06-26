@@ -28,6 +28,8 @@ watch(() => props.receta, (nueva) => {
   instrucciones.value = nueva.instrucciones;
 }, { immediate: true });
 
+const emit = defineEmits(['submit']);
+
 const enviar = () => {
   const recetaFinal = {
     nombre: nombre.value,
