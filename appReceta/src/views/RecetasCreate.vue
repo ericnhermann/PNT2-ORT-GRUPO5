@@ -35,10 +35,72 @@ const crear = async (receta) => {
 </script>
 
 <template>
-  <div class="container mt-4">
-    <h2 class="mb-4 text-success">Crear nueva receta</h2>
-    <RecetaForm @submit="crear" />
-    <div v-if="mensaje" class="alert alert-info mt-3">{{ mensaje }}</div>
+  <div class="create-container">
+    <div class="create-content">
+      <h1 class="create-title">Crear nueva receta</h1>
+      <p class="create-subtitle">¡Acá podés crear tus nuevas recetas y compartirlas con el resto!</p>
+      <RecetaForm @submit="crear" />
+      <div v-if="mensaje" class="alert alert-info mt-3">{{ mensaje }}</div>
+    </div>
   </div>
 </template>
+
+<style scoped>
+.create-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+.create-content {
+  width: 100%;
+  max-width: 600px;
+  text-align: center;
+}
+
+.create-title {
+  color: #4caf50;
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.create-subtitle {
+  color: #666;
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+  line-height: 1.5;
+}
+
+.alert {
+  margin-top: 1rem;
+  padding: 1rem;
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+.alert-info {
+  background-color: #d1ecf1;
+  color: #0c5460;
+  border: 1px solid #bee5eb;
+}
+
+@media (max-width: 768px) {
+  .create-container {
+    padding: 1rem;
+  }
+  
+  .create-title {
+    font-size: 2rem;
+  }
+  
+  .create-subtitle {
+    font-size: 1rem;
+  }
+}
+</style>
 
