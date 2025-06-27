@@ -5,9 +5,10 @@
     <div class="navbar-menu">
       <router-link to="/" class="navbar-item">Inicio</router-link>
       <router-link to="/recetas" class="navbar-item">Recetas</router-link>
-      <router-link to="/favoritos" class="navbar-item">Favoritos</router-link>
+      <router-link v-if ="user?.role === 'user' " to="/favoritos" class="navbar-item">Favoritos</router-link>
       <router-link to="/acerca" class="navbar-item">Acerca De</router-link>
       <router-link v-if="user?.role === 'admin'" to="/admin" class="navbar-item">Admin</router-link>
+      
     </div>
 
     <div class="navbar-right">

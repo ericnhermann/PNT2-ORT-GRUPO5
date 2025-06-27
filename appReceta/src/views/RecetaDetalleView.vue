@@ -71,38 +71,38 @@ watch(
 </script>
 
 <template>
-  <div class="container py-4">
-    <div v-if="loading">Cargando...</div>
-    <div v-else-if="error" class="text-danger">{{ error }}</div>
-    <div v-else class="receta-detalle-grid">
-      <div class="imagen-col">
+  <div class="detalle-container">
+    <div v-if="loading" class="estado-mensaje">Cargando...</div>
+    <div v-else-if="error" class="estado-mensaje error">{{ error }}</div>
+    <div v-else class="receta-detalle">
+      <div class="imagen-seccion">
         <img
           v-if="receta.enlaceImagen || receta.imagen"
           :src="receta.enlaceImagen || receta.imagen"
           alt="Imagen receta"
-          class="imagen-receta"
+          class="imagen"
         />
       </div>
 
-      <div class="detalle-col">
-        <p><strong>Nombre:</strong> {{ receta.nombreReceta || receta.nombre }}</p>
+      <div class="info-seccion">
+        <h2 class="titulo">{{ receta.nombreReceta || receta.nombre }}</h2>
         <p><strong>Categoría:</strong> {{ receta.categoria }}</p>
-        <p><strong>Puntaje:</strong> {{ receta.puntajeReceta || '-' }}</p>
+        <p><strong>Puntaje:</strong> {{ receta.puntajeReceta || 'Sin puntaje' }}</p>
 
-        <div>
-          <strong>Ingredientes:</strong>
-          <ul>
+        <div class="bloque">
+          <h4>Ingredientes:</h4>
+          <ul class="lista-ingredientes">
             <li v-for="(ing, index) in ingredientes" :key="index">{{ ing }}</li>
           </ul>
         </div>
 
-        <div>
-          <strong>Instrucciones:</strong>
-          <p style="margin-top: 0.5rem">{{ receta.instrucciones || receta.instruccion }}</p>
+        <div class="bloque">
+          <h4>Instrucciones:</h4>
+          <p class="instrucciones">{{ receta.instrucciones || receta.instruccion }}</p>
         </div>
 
-        <p style="margin-top: 1rem">
-          <strong>Fecha de Modificación:</strong> {{ receta.fechaModificacion || '-' }}
+        <p class="fecha">
+          <strong>Modificada:</strong> {{ receta.fechaModificacion || 'Sin fecha' }}
         </p>
       </div>
     </div>
@@ -110,28 +110,101 @@ watch(
 </template>
 
 <style scoped>
-.receta-detalle-grid {
+/* General */
+.detalle-container {
+  
+  color: #2c3e50;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #fff;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  max-width: 1000px;
+  margin: 2rem auto;
+}
+
+
+/* Estado */
+.estado-mensaje {
+  font-size: 1.2rem;
+  text-align: center;
+  padding: 2rem;
+  color: #2c3e50;
+}
+.estado-mensaje.error {
+  color: #e74c3c;
+}
+
+/* Layout */
+.receta-detalle {
   display: flex;
+  flex-direction: column;
   gap: 2rem;
-  align-items: flex-start;
+}
+@media (min-width: 768px) {
+  .receta-detalle {
+    flex-direction: row;
+    align-items: flex-start;
+  }
 }
 
-.imagen-col {
-  flex: 1 1 50%;
+/* Imagen */
+.imagen-seccion {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+.imagen {
+  width: 100%;
+  max-width: 400px;
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  object-fit: cover;
 }
 
-.imagen-receta {
-  max-width: 100%;
-  border-radius: 8px;
-  display: block;
+/* Detalles */
+.info-seccion {
+  flex: 2;
+  padding: 0 1rem;
+}
+.titulo {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  color: #1a1a1a;
+}
+.subtitulo {
+  color: #888;
+  font-size: 1.1rem;
+  margin-bottom: 1.2rem;
 }
 
-.detalle-col {
-  flex: 1 1 50%;
+.bloque {
+  margin: 1.2rem 0;
 }
 
-.detalle-col > p,
-.detalle-col > div {
-  margin-bottom: 1.5rem;
+.lista-ingredientes {
+  padding-left: 1.2rem;
+  list-style: disc;
+  color: #34495e;
+  line-height: 1.6;
+}
+
+.instrucciones {
+  background: #f9f9f9;
+  padding: 1rem;
+  border-left: 4px solid #00b894;
+  border-radius: 6px;
+  color: #2d3436;
+  line-height: 1.6;
+  font-size: 1rem;
+}
+
+/* Fecha */
+.fecha {
+  font-size: 0.9rem;
+  color: #7f8c8d;
+  margin-top: 1.5rem;
+  font-style: italic;
 }
 </style>
