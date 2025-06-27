@@ -3,28 +3,57 @@
     <router-link to="/" class="navbar-title">AppReceta</router-link>
 
     <!-- Menú hamburguesa para móviles -->
-    <button class="hamburger" @click="toggleMenu" :class="{ 'active': isMenuOpen }">
+    <button
+      class="hamburger"
+      @click="toggleMenu"
+      :class="{ active: isMenuOpen }"
+    >
       <span></span>
       <span></span>
       <span></span>
     </button>
 
-    <div class="navbar-menu" :class="{ 'active': isMenuOpen }">
-      <router-link to="/" class="navbar-item" @click="closeMenu">Inicio</router-link>
-      <router-link to="/recetas" class="navbar-item" @click="closeMenu">Recetas</router-link>
-      <router-link to="/favoritos" class="navbar-item" @click="closeMenu">Favoritos</router-link>
-      <router-link to="/acerca" class="navbar-item" @click="closeMenu">Acerca De</router-link>
-      <router-link v-if="user?.role === 'admin'" to="/admin" class="navbar-item" @click="closeMenu">Admin</router-link>
+    <div class="navbar-menu" :class="{ active: isMenuOpen }">
+      <router-link to="/" class="navbar-item" @click="closeMenu"
+        >Inicio</router-link
+      >
+      <router-link to="/recetas" class="navbar-item" @click="closeMenu"
+        >Recetas</router-link
+      >
+      <router-link
+        v-if="user?.role === 'user'"
+        to="/favoritos"
+        class="navbar-item"
+        >Favoritos</router-link
+      >
+      <router-link to="/acerca" class="navbar-item" @click="closeMenu"
+        >Acerca De</router-link
+      >
+      <router-link
+        v-if="user?.role === 'admin'"
+        to="/admin"
+        class="navbar-item"
+        @click="closeMenu"
+        >Admin</router-link
+      >
     </div>
 
     <div class="navbar-right">
       <div v-if="!isLoggedIn" class="navbar-auth">
-        <router-link to="/login" class="auth-button" @click="closeMenu">Iniciar Sesión</router-link>
-        <router-link to="/register" class="auth-button" @click="closeMenu">Crear Cuenta</router-link>
+        <router-link to="/login" class="auth-button" @click="closeMenu"
+          >Iniciar Sesión</router-link
+        >
+        <router-link to="/register" class="auth-button" @click="closeMenu"
+          >Crear Cuenta</router-link
+        >
       </div>
       <div v-else class="navbar-auth">
-        <router-link to="/perfil" class="auth-button" @click="closeMenu">Mi Perfil</router-link>
-        <button class="auth-button logout-button" @click="logout">Cerrar sesión</button>
+        <router-link to="/perfil" class="auth-button" @click="closeMenu"
+          >Mi Perfil</router-link
+        >
+        <button class="auth-button logout-button" @click="logout">
+          Cerrar sesión
+        </button>
       </div>
     </div>
   </nav>
@@ -33,7 +62,7 @@
 <script setup>
 import { ref, computed } from "vue";
 import { useAuthStore } from "../stores/auth";
-import { useRouter } from 'vue-router'
+import { useRouter } from "vue-router";
 
 const busqueda = ref("");
 const authStore = useAuthStore();
