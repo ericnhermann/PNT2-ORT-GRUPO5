@@ -27,9 +27,14 @@ const user = computed(() => authStore.getUser)
 const favoritosCount = ref(0)
 
 function cargarFavoritos() {
-  const favoritosGuardados = localStorage.getItem("favoritos")
-  if (favoritosGuardados) {
-    favoritosCount.value = JSON.parse(favoritosGuardados).length
+  const userData = localStorage.getItem("user")
+  if (userData) {
+    try {
+      const parsed = JSON.parse(userData)
+      favoritosCount.value = Array.isArray(parsed.favoritos) ? parsed.favoritos.length : 0
+    } catch (e) {
+      favoritosCount.value = 0
+    }
   } else {
     favoritosCount.value = 0
   }
