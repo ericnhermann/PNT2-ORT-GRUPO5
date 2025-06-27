@@ -1,40 +1,39 @@
 <template>
-  <div class="container py-4">
-    <!-- <h2 v-if="loading">{{ receta.nombreReceta }}</h2> -->
-
-    <div v-if="loading">Cargando...</div>
+  <div class="container py-4" v-cloak>
+    <div v-if="loading" class="loading">Cargando...</div>
     <div v-else-if="error" class="text-danger">{{ error }}</div>
-    <div v-else class="receta-detalle-grid">
-      <div class="imagen-col">
-        <img
-          v-if="receta.enlaceImagen"
-          :src="receta.enlaceImagen"
-          alt="Imagen receta"
-          class="imagen-receta"
-        />
+    <div v-else class="receta-detalle">
+      <div class="header-row">
+        <div class="imagen-col">
+          <img
+            v-if="receta.enlaceImagen"
+            :src="receta.enlaceImagen"
+            alt="Imagen receta"
+            class="imagen-receta"
+          />
+        </div>
+        <div class="nombre-col">
+          <h2>{{ receta.nombreReceta }}</h2>
+          <p><strong>Categoría:</strong> {{ receta.categoria }}</p>
+          <p><strong>Puntaje:</strong> {{ receta.puntajeReceta }}</p>
+          <p class="fecha-modificacion">
+            <strong>Fecha de Modificación:</strong>
+            {{ receta.fechaModificacion }}
+          </p>
+        </div>
       </div>
 
-      <div class="detalle-col">
-        <p><strong>Nombre:</strong> {{ receta.nombreReceta }}</p>
-        <p><strong>Categoría:</strong> {{ receta.categoria }}</p>
-        <p><strong>Puntaje:</strong> {{ receta.puntajeReceta }}</p>
+      <section class="seccion-ingredientes">
+        <h3>Ingredientes</h3>
+        <ul class="lista-ingredientes">
+          <li v-for="(ing, index) in ingredientes" :key="index">{{ ing }}</li>
+        </ul>
+      </section>
 
-        <div>
-          <strong>Ingredientes:</strong>
-          <ul>
-            <li v-for="(ing, index) in ingredientes" :key="index">{{ ing }}</li>
-          </ul>
-        </div>
-
-        <div>
-          <strong>Instrucciones:</strong>
-          <p style="margin-top: 0.5rem">{{ receta.instrucciones }}</p>
-        </div>
-
-        <p style="margin-top: 1rem">
-          <strong>Fecha de Modificación:</strong> {{ receta.fechaModificacion }}
-        </p>
-      </div>
+      <section class="seccion-instrucciones">
+        <h3>Instrucciones</h3>
+        <p>{{ receta.instrucciones }}</p>
+      </section>
     </div>
   </div>
 </template>
@@ -94,28 +93,122 @@ watch(
 </script>
 
 <style scoped>
-.receta-detalle-grid {
+.container {
+  max-width: 1100px; /* Más ancho */
+  margin: 2rem auto;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 4px 15px rgb(0 0 0 / 0.15);
+  padding: 3rem 4rem; /* Más padding para espacio */
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+}
+
+.loading {
+  font-style: italic;
+  color: #666;
+  text-align: center;
+  padding: 2rem 0;
+}
+
+.text-danger {
+  color: #b00020;
+  font-weight: 600;
+  text-align: center;
+  margin: 2rem 0;
+}
+
+.receta-detalle {
   display: flex;
-  gap: 2rem;
-  align-items: flex-start;
+  flex-direction: column;
+  gap: 3rem; /* Más espacio vertical */
+}
+
+.header-row {
+  display: flex;
+  gap: 3rem; /* Más separación */
+  align-items: center;
 }
 
 .imagen-col {
-  flex: 1 1 50%;
+  flex: 0 0 320px; /* Imagen un poco más grande */
+  max-width: 320px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgb(0 0 0 / 0.15);
 }
 
 .imagen-receta {
-  max-width: 100%;
-  border-radius: 8px;
+  width: 100%;
+  height: auto;
   display: block;
+  object-fit: cover;
+  transition: transform 0.3s ease;
 }
 
-.detalle-col {
-  flex: 1 1 50%;
+.imagen-receta:hover {
+  transform: scale(1.05);
+  cursor: pointer;
 }
 
-.detalle-col > p,
-.detalle-col > div {
-  margin-bottom: 1.5rem;
+.nombre-col h2 {
+  margin: 0 0 0.5rem;
+  font-weight: 700;
+  font-size: 2rem; /* Más grande */
+  color: #222;
+}
+
+.nombre-col p {
+  margin: 0.4rem 0;
+  font-size: 1.1rem;
+  color: #555;
+}
+
+.fecha-modificacion {
+  font-style: italic;
+  font-size: 1rem;
+  color: #777;
+  margin-top: 1rem;
+}
+
+.seccion-ingredientes h3,
+.seccion-instrucciones h3 {
+  font-size: 1.6rem;
+  margin-bottom: 1.2rem;
+  border-bottom: 2px solid #ddd;
+  padding-bottom: 0.3rem;
+  color: #444;
+}
+
+.lista-ingredientes {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 2rem;
+  padding: 0;
+  margin: 0;
+}
+
+.lista-ingredientes li {
+  background: #e2f0d9;
+  color: #2a5d24;
+  padding: 0.7rem 1.5rem;
+  border-radius: 20px;
+  font-weight: 600;
+  box-shadow: 0 1px 4px rgb(42 93 36 / 0.3);
+  user-select: none;
+  transition: background-color 0.3s ease;
+}
+
+.lista-ingredientes li:hover {
+  background: #c1dbb1;
+  cursor: default;
+}
+
+.seccion-instrucciones p {
+  font-size: 1.1rem;
+  line-height: 1.7;
+  white-space: pre-line;
+  color: #333;
 }
 </style>
