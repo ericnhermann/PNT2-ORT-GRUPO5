@@ -2,55 +2,64 @@
   <nav class="navbar">
     <router-link to="/" class="navbar-title">AppReceta</router-link>
 
-    <!-- Menú hamburguesa para móviles -->
     <button
-      class="hamburger"
+      class="hamburguesa"
       @click="toggleMenu"
-      :class="{ active: isMenuOpen }"
+      :class="{ activo: isMenuOpen }"
+      aria-label="Menú"
     >
       <span></span>
       <span></span>
       <span></span>
     </button>
 
-    <div class="navbar-menu" :class="{ active: isMenuOpen }">
-      <router-link to="/" class="navbar-item" @click="closeMenu"
-        >Inicio</router-link
-      >
-      <router-link to="/recetas" class="navbar-item" @click="closeMenu"
-        >Recetas</router-link
-      >
+    <div 
+      v-if="isMenuOpen" 
+      class="menu-overlay" 
+      @click="closeMenu"
+    ></div>
+
+    <div class="navbar-menu" :class="{ activo: isMenuOpen }">
+      <router-link to="/" class="navbar-item" @click="closeMenu">
+        Inicio
+      </router-link>
+      <router-link to="/recetas" class="navbar-item" @click="closeMenu">
+        Recetas
+      </router-link>
       <router-link
         v-if="user?.role === 'user'"
         to="/favoritos"
         class="navbar-item"
-        >Favoritos</router-link
+        @click="closeMenu"
       >
-      <router-link to="/acerca" class="navbar-item" @click="closeMenu"
-        >Acerca De</router-link
-      >
+        Favoritos
+      </router-link>
+      <router-link to="/acerca" class="navbar-item" @click="closeMenu">
+        Acerca De
+      </router-link>
       <router-link
         v-if="user?.role === 'admin'"
         to="/admin"
         class="navbar-item"
         @click="closeMenu"
-        >Admin</router-link
       >
+        Admin
+      </router-link>
     </div>
 
-    <div class="navbar-right">
+    <div class="navbar-right" :class="{ 'menu-open': isMenuOpen }">
       <div v-if="!isLoggedIn" class="navbar-auth">
-        <router-link to="/login" class="auth-button" @click="closeMenu"
-          >Iniciar Sesión</router-link
-        >
-        <router-link to="/register" class="auth-button" @click="closeMenu"
-          >Crear Cuenta</router-link
-        >
+        <router-link to="/login" class="auth-button" @click="closeMenu">
+          Iniciar Sesión
+        </router-link>
+        <router-link to="/register" class="auth-button" @click="closeMenu">
+          Crear Cuenta
+        </router-link>
       </div>
       <div v-else class="navbar-auth">
-        <router-link to="/perfil" class="auth-button" @click="closeMenu"
-          >Mi Perfil</router-link
-        >
+        <router-link to="/perfil" class="auth-button" @click="closeMenu">
+          Mi Perfil
+        </router-link>
         <button class="auth-button logout-button" @click="logout">
           Cerrar sesión
         </button>
@@ -60,7 +69,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted, onUnmounted } from "vue";
 import { useAuthStore } from "../stores/auth";
 import { useRouter } from "vue-router";
 
@@ -80,11 +89,28 @@ const logout = () => {
 
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value;
+  document.body.style.overflow = isMenuOpen.value ? 'hidden' : '';
 };
 
 const closeMenu = () => {
   isMenuOpen.value = false;
+  document.body.style.overflow = '';
 };
+
+const handleResize = () => {
+  if (window.innerWidth > 768 && isMenuOpen.value) {
+    closeMenu();
+  }
+};
+
+onMounted(() => {
+  window.addEventListener('resize', handleResize);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('resize', handleResize);
+  document.body.style.overflow = '';
+});
 
 const buscar = () => {
   console.log("Buscando:", busqueda.value);
@@ -101,7 +127,8 @@ const buscar = () => {
   align-items: center;
   justify-content: space-between;
   box-sizing: border-box;
-  flex-wrap: wrap;
+  min-height: 70px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .navbar-title {
@@ -111,10 +138,15 @@ const buscar = () => {
   text-decoration: none;
   white-space: nowrap;
   z-index: 1001;
+  transition: color 0.3s ease;
+}
+
+.navbar-title:hover {
+  color: #e8f5e8;
 }
 
 /* Menú hamburguesa */
-.hamburger {
+.hamburguesa {
   display: none;
   flex-direction: column;
   background: none;
@@ -122,53 +154,74 @@ const buscar = () => {
   cursor: pointer;
   padding: 0.5rem;
   z-index: 1001;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
 }
 
-.hamburger span {
+.hamburguesa:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.hamburguesa span {
   width: 25px;
   height: 3px;
   background-color: white;
   margin: 3px 0;
-  transition: 0.3s;
+  transition: 0.3s ease;
   border-radius: 2px;
 }
 
-.hamburger.active span:nth-child(1) {
+.hamburguesa.activo span:nth-child(1) {
   transform: rotate(-45deg) translate(-5px, 6px);
 }
 
-.hamburger.active span:nth-child(2) {
+.hamburguesa.activo span:nth-child(2) {
   opacity: 0;
 }
 
-.hamburger.active span:nth-child(3) {
+.hamburguesa.activo span:nth-child(3) {
   transform: rotate(45deg) translate(-5px, -6px);
+}
+
+.menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  display: none;
 }
 
 .navbar-menu {
   display: flex;
   gap: 1.5rem;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .navbar-item {
   color: white;
   text-decoration: none;
   font-weight: 500;
-  transition: all 0.3s;
-  padding: 0.4rem 0.8rem;
+  transition: all 0.3s ease;
+  padding: 0.5rem 1rem;
   border: 2px solid transparent;
-  border-radius: 4px;
+  border-radius: 6px;
   background-color: transparent;
   cursor: pointer;
-  min-width: 110px;
+  min-width: 90px;
   text-align: center;
+  white-space: nowrap;
 }
 
-.navbar-item:hover {
+.navbar-item:hover,
+.navbar-item.router-link-activo {
   background-color: white;
   color: #4caf50;
   border-color: white;
+  transform: translateY(-1px);
 }
 
 .navbar-right {
@@ -185,23 +238,27 @@ const buscar = () => {
 }
 
 .auth-button {
-  padding: 0.4rem 0.8rem;
+  padding: 0.5rem 1rem;
   border: 2px solid white;
   background-color: transparent;
   color: white;
-  border-radius: 4px;
-  font-weight: bold;
+  border-radius: 6px;
+  font-weight: 600;
   text-decoration: none;
   cursor: pointer;
-  transition: all 0.3s;
-  min-width: 110px;
+  transition: all 0.3s ease;
+  min-width: 100px;
   text-align: center;
   display: inline-block;
+  white-space: nowrap;
+  font-size: 0.9rem;
 }
 
 .auth-button:hover {
   background-color: white;
   color: #4caf50;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .logout-button {
@@ -216,69 +273,144 @@ const buscar = () => {
   border-color: #c62828;
 }
 
-/* Responsive */
+@media (max-width: 1024px) {
+  .navbar {
+    padding: 1rem 1.5rem;
+  }
+  
+  .navbar-menu {
+    gap: 1rem;
+  }
+  
+  .navbar-item {
+    min-width: 80px;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.9rem;
+  }
+  
+  .auth-button {
+    min-width: 90px;
+    font-size: 0.85rem;
+  }
+}
+
 @media (max-width: 768px) {
   .navbar {
     padding: 1rem;
+    position: relative;
   }
 
-  .hamburger {
+  .hamburguesa {
     display: flex;
+  }
+
+  .menu-overlay {
+    display: block;
   }
 
   .navbar-menu {
     position: fixed;
     top: 0;
     left: -100%;
-    width: 100%;
+    width: 280px;
     height: 100vh;
     background-color: #4caf50;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 2rem;
+    justify-content: flex-start;
+    align-items: stretch;
+    gap: 0;
     transition: left 0.3s ease;
     z-index: 1000;
+    padding: 80px 0 20px 0;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+    overflow-y: auto;
   }
 
-  .navbar-menu.active {
+  .navbar-menu.activo {
     left: 0;
   }
 
   .navbar-item {
-    font-size: 1.2rem;
-    padding: 0.8rem 1.5rem;
-    min-width: 150px;
+    font-size: 1.1rem;
+    padding: 1rem 2rem;
+    min-width: auto;
+    width: 100%;
+    text-align: left;
+    border: none;
+    border-radius: 0;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .navbar-item:hover {
+    background-color: rgba(255,255,255,0.1);
+    color: white;
+    transform: none;
+    padding-left: 2.5rem;
   }
 
   .navbar-right {
-    gap: 0.5rem;
+    position: fixed;
+    bottom: 20px;
+    left: -100%;
+    width: 280px;
+    transition: left 0.3s ease;
+    z-index: 1000;
+    padding: 0 20px;
+    box-sizing: border-box;
+  }
+
+  .navbar-right.menu-open {
+    left: 0;
   }
 
   .navbar-auth {
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.8rem;
+    width: 100%;
   }
 
   .auth-button {
-    min-width: 120px;
-    padding: 0.5rem 1rem;
+    width: 100%;
+    min-width: auto;
+    padding: 0.8rem 1rem;
+    font-size: 1rem;
+    border-radius: 8px;
   }
 }
 
 @media (max-width: 480px) {
+  .navbar {
+    padding: 0.8rem;
+  }
+
   .navbar-title {
     font-size: 1.4rem;
   }
 
+  .navbar-menu {
+    width: 100%;
+  }
+
+  .navbar-right {
+    width: 100%;
+    padding: 0 15px;
+  }
+
   .navbar-item {
-    min-width: 120px;
-    font-size: 1.1rem;
+    font-size: 1rem;
+    padding: 0.8rem 1.5rem;
   }
 
   .auth-button {
-    min-width: 100px;
     font-size: 0.9rem;
+    padding: 0.7rem 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .navbar-item,
+  .auth-button {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
 </style>
