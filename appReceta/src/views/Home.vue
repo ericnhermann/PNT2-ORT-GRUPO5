@@ -217,11 +217,11 @@ const router = useRouter()
   
   .carousel-wrapper {
     margin-top: 1.5rem;
-    width: 100vw; /* CLAVE: Usa todo el viewport */
-    margin-left: calc(-50vw + 50%); /* CLAVE: Centra desde cualquier contenedor */
-    padding: 0; /* CLAVE: Sin padding que desplace */
+    width: 100vw; 
+    margin-left: calc(-50vw + 50%); 
+    padding: 0; 
     box-sizing: border-box;
-    overflow-x: hidden; /* CLAVE: Evita scroll horizontal */
+    overflow-x: hidden; 
   }
 }
 
